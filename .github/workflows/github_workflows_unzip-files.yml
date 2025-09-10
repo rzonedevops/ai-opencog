@@ -1,0 +1,55 @@
+name: Unzip Files
+
+on:
+  # Trigger on push to main branch
+  push:
+    branches: [ main ]
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      zip_path:
+        description: 'Path to the zip file'
+        required: true
+        default: 'ai-opencog.zip'
+      extract_dir:
+        description: 'Directory to extract to'
+        required: false
+        default: 'extracted'
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create extraction directory
+        run: |
+          mkdir -p ${{ github.event.inputs.extract_dir || 'extracted' }}
+        shell: bash
+
+      - name: Unzip file
+        run: |
+          ZIP_PATH=${{ github.event.inputs.zip_path || 'ai-opencog.zip' }}
+          EXTRACT_DIR=${{ github.event.inputs.extract_dir || 'extracted' }}
+          
+          # Check if the zip file exists
+          if [ ! -f "$ZIP_PATH" ]; then
+            echo "Error: Zip file $ZIP_PATH not found"
+            exit 1
+          fi
+          
+          echo "Extracting $ZIP_PATH to $EXTRACT_DIR"
+          unzip -o "$ZIP_PATH" -d "$EXTRACT_DIR"
+          
+          # List extracted contents
+          echo "Extracted files:"
+          ls -la "$EXTRACT_DIR"
+        shell: bash
+
+      # Optional: Upload extracted files as artifacts
+      - name: Upload extracted files as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: extracted-files
+          path: ${{ github.event.inputs.extract_dir || 'extracted' }}
