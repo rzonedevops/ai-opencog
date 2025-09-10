@@ -4,6 +4,8 @@
   href: installation.md
 - name: Quick Start
   href: quickstart.md
+- name: AI-OpenCog Integration Guide
+  href: ai-opencog-integration-guide.md
 - name: Contributing
   href: CONTRIBUTING.md
 - name: Support
