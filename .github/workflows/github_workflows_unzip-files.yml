@@ -3,7 +3,7 @@ name: Unzip Files
 on:
   # Trigger on push to main branch
   push:
-    branches: [ main ]
+    branches: [main]
   # Allow manual triggering
   workflow_dispatch:
     inputs:
@@ -19,9 +19,20 @@ on:
 jobs:
   unzip:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email \
+            "github-actions[bot]@users.noreply.github.com"
+        shell: bash
 
       - name: Create extraction directory
         run: |
@@ -32,16 +43,16 @@ jobs:
         run: |
           ZIP_PATH=${{ github.event.inputs.zip_path || 'ai-opencog.zip' }}
           EXTRACT_DIR=${{ github.event.inputs.extract_dir || 'extracted' }}
-          
+
           # Check if the zip file exists
           if [ ! -f "$ZIP_PATH" ]; then
             echo "Error: Zip file $ZIP_PATH not found"
             exit 1
           fi
-          
+
           echo "Extracting $ZIP_PATH to $EXTRACT_DIR"
           unzip -o "$ZIP_PATH" -d "$EXTRACT_DIR"
-          
+
           # List extracted contents
           echo "Extracted files:"
           ls -la "$EXTRACT_DIR"
@@ -53,3 +64,30 @@ jobs:
         with:
           name: extracted-files
           path: ${{ github.event.inputs.extract_dir || 'extracted' }}
+
+      - name: Commit extracted files
+        run: |
+          EXTRACT_DIR=${{ github.event.inputs.extract_dir || 'extracted' }}
+
+          # Add extracted files to git
+          git add "$EXTRACT_DIR"
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            # Get some info about what was extracted for the commit message
+            FILE_COUNT=$(find "$EXTRACT_DIR" -type f | wc -l)
+            ZIP_PATH=${{ github.event.inputs.zip_path || 'ai-opencog.zip' }}
+
+            # Commit the changes
+            COMMIT_MSG="Auto-extract: Unzipped $ZIP_PATH to $EXTRACT_DIR"
+            COMMIT_MSG="$COMMIT_MSG ($FILE_COUNT files)"
+            git commit -m "$COMMIT_MSG"
+
+            # Push the changes
+            git push
+
+            echo "Successfully committed and pushed $FILE_COUNT extracted files"
+          fi
+        shell: bash
