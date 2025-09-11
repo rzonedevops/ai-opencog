@@ -40,7 +40,11 @@
   "homepage": "https://github.com/eclipse-theia/theia",
   "files": [
     "lib",
-    "src"
+    "src",
+    "docs",
+    "examples",
+    "README.md",
+    "LICENSE*"
   ],
   "scripts": {
     "build": "theiaext build",
@@ -49,8 +53,14 @@
     "lint": "theiaext lint",
     "test": "theiaext test",
     "watch": "theiaext watch",
-    "validate:phase6": "node phase6-validation.js",
-    "validate:resource-requirements": "node validate-resource-requirements.js",
+    "validate:phase6": "node tests/phase6-validation.js",
+    "validate:resource-requirements": "node tests/validate-resource-requirements.js",
+    "validate:advanced-learning": "node tests/validate-advanced-learning.js",
+    "validate:production": "node tests/validate-production-optimization.js",
+    "test:all": "npm run test && npm run validate:phase6 && npm run validate:resource-requirements",
+    "demo:cognitive": "node examples/cognitive-widgets-demo.js",
+    "demo:assistance": "node examples/intelligent-assistance-demo.js",
+    "demo:production": "node examples/production-optimization-demo.js",
     "docker:build": "docker build -t theia-opencog:latest .",
     "docker:run": "docker run -d --name theia-opencog -p 3000:3000 theia-opencog:latest",
     "deploy:production": "docker-compose -f docker-compose.production.yml up -d",

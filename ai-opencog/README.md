@@ -9,7 +9,7 @@ This package provides **world-class cognitive AI capabilities** for integrating 
 **🎉 PROJECT STATUS: IMPLEMENTATION COMPLETE** ✅  
 **📋 Design Compliance: 98%** | **🚀 Production Ready** | **🏆 Exceptional Quality**
 
-📊 **[Complete Implementation Analysis](FINAL_IMPLEMENTATION_SUMMARY.md)** | 📋 **[Implementation Checklist](IMPLEMENTATION_CHECKLIST.md)**
+📊 **[Complete Implementation Analysis](docs/implementation/FINAL_IMPLEMENTATION_SUMMARY.md)** | 📋 **[Implementation Checklist](docs/implementation/IMPLEMENTATION_CHECKLIST.md)**
 
 ## Features
 
@@ -232,11 +232,42 @@ This implementation fully complies with the SKZ autonomous agents framework:
 - **Event-Driven Learning**: Reactive behavioral analysis
 - **Autonomous Adaptation**: Dynamic interface and workflow optimization
 
-See [SKZ_COMPATIBILITY.md](SKZ_COMPATIBILITY.md) for detailed compliance verification.
+See [docs/guides/SKZ_COMPATIBILITY.md](docs/guides/SKZ_COMPATIBILITY.md) for detailed compliance verification.
+
+## 📚 Documentation
+
+The AI-OpenCog extension includes comprehensive documentation organized for easy navigation:
+
+### Quick Links
+- **[📖 Complete Documentation](docs/)** - Full documentation index
+- **[🚀 Production Deployment](docs/guides/PRODUCTION_DEPLOYMENT_GUIDE.md)** - Deployment guide
+- **[🧠 Advanced Features](docs/guides/ADVANCED_LEARNING_ALGORITHMS.md)** - Advanced learning algorithms
+- **[⚙️ Implementation Status](docs/implementation/FINAL_IMPLEMENTATION_SUMMARY.md)** - Complete implementation analysis
+
+### Directory Structure
+```
+📁 docs/               # 📚 All documentation
+├── implementation/    # 📋 Implementation docs & summaries  
+├── phases/           # 🔄 Phase-by-phase documentation
+├── guides/           # 📖 User guides & technical docs
+└── examples/         # 💡 Example docs & demos
+
+📁 examples/          # 🎮 Demo scripts & code examples
+📁 tests/             # 🧪 Test files & validation scripts
+📁 src/               # 💻 Source code (production-ready)
+```
+
+### Documentation Categories
+- **Implementation**: Project completion status and implementation details
+- **Phases**: Phase 1-6 development documentation and verification
+- **Guides**: Technical guides, deployment docs, and user documentation  
+- **Examples**: Practical examples and demonstration code
 
 ## Contributing
 
 This package follows Theia's contribution guidelines. See the main repository documentation for development setup and contribution processes.
+
+For detailed contribution guidelines, see [docs/guides/COMMUNITY_CONTRIBUTION_GUIDE.md](docs/guides/COMMUNITY_CONTRIBUTION_GUIDE.md).
 
 ## License
 
