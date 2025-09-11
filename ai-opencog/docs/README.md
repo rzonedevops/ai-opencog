@@ -19,6 +19,10 @@ Phase-by-phase implementation documentation:
 
 ### 📁 [guides/](guides/)
 User guides, technical documentation, and how-to resources:
+- **[Architecture documentation index](guides/ARCHITECTURE_INDEX.md)** - Complete guide to architecture documentation
+- **Technical architecture documentation** - Comprehensive system architecture with Mermaid diagrams
+- **Cognitive processing architecture** - Detailed cognitive AI processing pipeline
+- **Deployment and infrastructure architecture** - Production deployment and infrastructure
 - Advanced learning algorithms guide
 - Advanced reasoning documentation
 - Chat integration guide
@@ -39,6 +43,11 @@ Example documentation and demonstration guides:
 | Topic | Documentation |
 |-------|---------------|
 | **Getting Started** | [Main README](../README.md) |
+| **🏗️ Architecture Overview** | [guides/ARCHITECTURE_INDEX.md](guides/ARCHITECTURE_INDEX.md) |
+| **Technical Architecture** | [guides/TECHNICAL_ARCHITECTURE.md](guides/TECHNICAL_ARCHITECTURE.md) |
+| **Architecture Diagrams** | [guides/ARCHITECTURE_DIAGRAMS.md](guides/ARCHITECTURE_DIAGRAMS.md) |
+| **Cognitive Processing** | [guides/COGNITIVE_PROCESSING_ARCHITECTURE.md](guides/COGNITIVE_PROCESSING_ARCHITECTURE.md) |
+| **Deployment & Infrastructure** | [guides/DEPLOYMENT_INFRASTRUCTURE_ARCHITECTURE.md](guides/DEPLOYMENT_INFRASTRUCTURE_ARCHITECTURE.md) |
 | **Production Deployment** | [guides/PRODUCTION_DEPLOYMENT_GUIDE.md](guides/PRODUCTION_DEPLOYMENT_GUIDE.md) |
 | **Advanced Features** | [guides/ADVANCED_LEARNING_ALGORITHMS.md](guides/ADVANCED_LEARNING_ALGORITHMS.md) |
 | **Implementation Status** | [implementation/FINAL_IMPLEMENTATION_SUMMARY.md](implementation/FINAL_IMPLEMENTATION_SUMMARY.md) |
