@@ -240,8 +240,11 @@ The AI-OpenCog extension includes comprehensive documentation organized for easy
 
 ### Quick Links
 - **[📖 Complete Documentation](docs/)** - Full documentation index
+- **[🏗️ Technical Architecture](docs/guides/TECHNICAL_ARCHITECTURE.md)** - Comprehensive system architecture with Mermaid diagrams
+- **[📊 Architecture Diagrams](docs/guides/ARCHITECTURE_DIAGRAMS.md)** - Detailed architectural diagrams and interactions
+- **[🧠 Cognitive Processing](docs/guides/COGNITIVE_PROCESSING_ARCHITECTURE.md)** - Cognitive AI processing pipeline
 - **[🚀 Production Deployment](docs/guides/PRODUCTION_DEPLOYMENT_GUIDE.md)** - Deployment guide
-- **[🧠 Advanced Features](docs/guides/ADVANCED_LEARNING_ALGORITHMS.md)** - Advanced learning algorithms
+- **[🔧 Advanced Features](docs/guides/ADVANCED_LEARNING_ALGORITHMS.md)** - Advanced learning algorithms
 - **[⚙️ Implementation Status](docs/implementation/FINAL_IMPLEMENTATION_SUMMARY.md)** - Complete implementation analysis
 
 ### Directory Structure
@@ -260,8 +263,9 @@ The AI-OpenCog extension includes comprehensive documentation organized for easy
 ### Documentation Categories
 - **Implementation**: Project completion status and implementation details
 - **Phases**: Phase 1-6 development documentation and verification
-- **Guides**: Technical guides, deployment docs, and user documentation  
+- **Guides**: Technical guides, architecture documentation, deployment docs, and user documentation  
 - **Examples**: Practical examples and demonstration code
+- **Architecture**: Comprehensive technical architecture with visual diagrams and detailed explanations
 
 ## Contributing
 
