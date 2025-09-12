@@ -77,7 +77,7 @@ export class SystemIntegrationService {
     private resourceManager: ResourceManager;
     private feedbackIntegration: FeedbackIntegration;
     
-    private optimizationTimer?: NodeJS.Timeout;
+    private optimizationTimer?: any;
     private readonly optimizationInterval = 300000; // 5 minutes
 
     constructor() {

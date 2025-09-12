@@ -42,6 +42,10 @@ export interface UserActivity {
         line?: number;
         column?: number;
         selection?: string;
+        terminal?: string;
+        task?: string;
+        debugSession?: string;
+        [key: string]: any;
     };
 }
 
