@@ -1,37 +1,31 @@
 {
-  "extends": "../../configs/base.tsconfig",
   "compilerOptions": {
+    "target": "ES2019",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["ES2019", "dom"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "composite": true,
     "rootDir": "src",
-    "outDir": "lib"
+    "outDir": "lib",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
-    "src"
+    "src/**/*"
   ],
-  "references": [
-    {
-      "path": "../ai-chat"
-    },
-    {
-      "path": "../ai-core"
-    },
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../editor"
-    },
-    {
-      "path": "../filesystem"
-    },
-    {
-      "path": "../monaco"
-    },
-    {
-      "path": "../variable-resolver"
-    },
-    {
-      "path": "../workspace"
-    }
+  "exclude": [
+    "node_modules",
+    "lib",
+    "**/*.spec.ts",
+    "**/*.test.ts"
   ]
 }
