@@ -44,24 +44,20 @@ RUN echo 'export declare function injectable<T>(target: T): T; export declare fu
 
 # Copy source code
 COPY src ./src
-COPY docs ./docs 2>/dev/null || echo "No docs directory"
-COPY examples ./examples 2>/dev/null || echo "No examples directory"
 COPY *.md ./
 
 # Create build-specific TypeScript config
-RUN cat > tsconfig.docker.json << 'EOF'
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "skipLibCheck": true,
-    "noImplicitAny": false,
-    "strict": false,
-    "declaration": true,
-    "declarationMap": false,
-    "sourceMap": false
-  }
-}
-EOF
+RUN echo '{\
+  "extends": "./tsconfig.json",\
+  "compilerOptions": {\
+    "skipLibCheck": true,\
+    "noImplicitAny": false,\
+    "strict": false,\
+    "declaration": true,\
+    "declarationMap": false,\
+    "sourceMap": false\
+  }\
+}' > tsconfig.docker.json
 
 # Build the application
 RUN npx tsc -p tsconfig.docker.json || echo "Build completed with warnings"
@@ -93,8 +89,6 @@ RUN npm ci --only=production --legacy-peer-deps && \
 # Copy built application from builder stage
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/*.md ./
-COPY --from=builder /app/docs ./docs 2>/dev/null || echo "No docs to copy"
-COPY --from=builder /app/examples ./examples 2>/dev/null || echo "No examples to copy"
 
 # Change ownership
 RUN chown -R theia:nodejs /app
