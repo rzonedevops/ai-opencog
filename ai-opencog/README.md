@@ -197,7 +197,7 @@ await learningAgent.learnFromFeedback(
 const personalizedHelp = await learningAgent.getPersonalizedRecommendations('user123');
 ```
 
-For complete usage examples, see [USER_BEHAVIOR_LEARNING.md](USER_BEHAVIOR_LEARNING.md).
+For complete usage examples, see [USER_BEHAVIOR_LEARNING.md](docs/guides/USER_BEHAVIOR_LEARNING.md).
 
 ## Architecture
 
