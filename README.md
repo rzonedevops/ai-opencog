@@ -158,6 +158,13 @@ The project implements a sophisticated layered architecture:
 - **Phase 5**: Advanced Features  
 - **Phase 6**: Production Optimization
 
+### 📋 Development Roadmap
+Comprehensive development planning for advanced phases:
+- **[📊 Development Roadmap](DEVELOPMENT_ROADMAP.md)** - Complete roadmap for Phases 4-6 with actionable tasks
+- **[🛠️ Implementation Guide](IMPLEMENTATION_GUIDE.md)** - Step-by-step technical implementation instructions  
+- **[⚡ Quick Reference](PHASES_4_6_QUICK_REFERENCE.md)** - Executive summary and key deliverables
+- **[📋 Project Tracking](PROJECT_TRACKING_TEMPLATE.md)** - Project management template for implementation
+
 ## 🤝 Contributing
 
 This project follows Theia's contribution guidelines. See the [community contribution guide](ai-opencog/docs/guides/COMMUNITY_CONTRIBUTION_GUIDE.md) for detailed information.
