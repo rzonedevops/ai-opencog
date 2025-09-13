@@ -47,12 +47,14 @@
     "LICENSE*"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && npm run compile",
     "clean": "rm -rf lib",
     "compile": "tsc",
+    "compile:watch": "tsc --watch",
     "lint": "echo 'Linting requires ESLint setup'",
     "test": "echo \"Tests require proper test setup\"",
-    "watch": "tsc --watch",
+    "package": "npm pack",
+    "prepack": "npm run build",
     "validate:phase6": "node tests/phase6-validation.js",
     "validate:resource-requirements": "node tests/validate-resource-requirements.js",
     "validate:advanced-learning": "node tests/validate-advanced-learning.js",
@@ -63,9 +65,12 @@
     "demo:production": "node examples/production-optimization-demo.js",
     "docker:build": "docker build -t theia-opencog:latest .",
     "docker:run": "docker run -d --name theia-opencog -p 3000:3000 theia-opencog:latest",
+    "docker:build-and-run": "npm run docker:build && npm run docker:run",
     "deploy:production": "docker-compose -f docker-compose.production.yml up -d",
     "deploy:staging": "docker-compose -f docker-compose.production.yml -p staging up -d",
-    "prepare": "npm run build"
+    "deploy:local": "docker-compose up -d",
+    "version": "npm run build && git add -A",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
