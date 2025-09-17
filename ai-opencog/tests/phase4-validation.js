@@ -14,7 +14,7 @@ console.log('🔍 Phase 4: Frontend Integration - Completion Validation');
 console.log('=' .repeat(60));
 
 // Check if we're in the correct directory
-const packagePath = path.join(__dirname, 'package.json');
+const packagePath = path.join(__dirname, '..', 'package.json');
 if (!fs.existsSync(packagePath)) {
     console.error('❌ Error: Must run from ai-opencog package directory');
     process.exit(1);
@@ -34,13 +34,13 @@ const validationChecks = [
                 'PHASE4_IMPLEMENTATION_DOCUMENTATION.md',
                 'PHASE4_COMPLETION_VERIFICATION.md'
             ];
-            return docs.every(doc => fs.existsSync(path.join(__dirname, doc)));
+            return docs.every(doc => fs.existsSync(path.join(__dirname, '..', 'docs', 'phases', doc)));
         }
     },
     {
         name: 'Cognitive Widgets Implementation', 
         check: () => {
-            const widgetPath = path.join(__dirname, 'src/browser/cognitive-widgets');
+            const widgetPath = path.join(__dirname, '..', 'src/browser/cognitive-widgets');
             const requiredWidgets = [
                 'code-intelligence-widget.tsx',
                 'learning-progress-widget.tsx', 
@@ -56,14 +56,14 @@ const validationChecks = [
     {
         name: 'OpenCog Chat Agent Integration',
         check: () => {
-            const chatAgentPath = path.join(__dirname, 'src/browser/opencog-chat-agent.ts');
+            const chatAgentPath = path.join(__dirname, '..', 'src/browser/opencog-chat-agent.ts');
             return fs.existsSync(chatAgentPath);
         }
     },
     {
         name: 'Widget Contribution Module',
         check: () => {
-            const contributionPath = path.join(__dirname, 'src/browser/cognitive-widgets/cognitive-widgets-contribution.ts');
+            const contributionPath = path.join(__dirname, '..', 'src/browser/cognitive-widgets/cognitive-widgets-contribution.ts');
             return fs.existsSync(contributionPath);
         }
     },
@@ -75,14 +75,14 @@ const validationChecks = [
                 'src/test/phase4-integration-validation.spec.ts'
             ];
             return testPaths.every(testPath => 
-                fs.existsSync(path.join(__dirname, testPath))
+                fs.existsSync(path.join(__dirname, '..', testPath))
             );
         }
     },
     {
         name: 'Frontend Module Integration',
         check: () => {
-            const modulePath = path.join(__dirname, 'src/browser/ai-opencog-frontend-module.ts');
+            const modulePath = path.join(__dirname, '..', 'src/browser/ai-opencog-frontend-module.ts');
             if (!fs.existsSync(modulePath)) return false;
             
             const content = fs.readFileSync(modulePath, 'utf8');
