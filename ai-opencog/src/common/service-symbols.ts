@@ -45,3 +45,12 @@ export const DistributedReasoningServiceSymbol = Symbol.for('DistributedReasonin
 
 // Community services
 export const CommunityEnhancementServiceSymbol = Symbol.for('CommunityEnhancementService');
+
+// Widget factory symbol to avoid TS2693 errors
+export const WidgetFactorySymbol = Symbol.for('WidgetFactory');
+
+// Contribution symbols to avoid TS2693 errors
+export const FrontendApplicationContributionSymbol = Symbol.for('FrontendApplicationContribution');
+export const CommandContributionSymbol = Symbol.for('CommandContribution');
+export const MenuContributionSymbol = Symbol.for('MenuContribution');
+export const ChatAgentSymbol = Symbol.for('ChatAgent');

@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import { ContainerModule } from '@theia/core/shared/inversify';
-import { FrontendApplicationContribution, WidgetFactory } from '@theia/core/lib/browser';
+import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { CommandContribution, MenuContribution } from '@theia/core/lib/common';
 import { 
     OpenCogService,
@@ -26,7 +26,30 @@ import {
     SupervisedLearningService,
     UnsupervisedLearningService,
     ReinforcementLearningService,
-    ProductionOptimizationService
+    ProductionOptimizationService,
+    ProductionConfigurationService,
+    ProductionDeploymentService,
+    ProductionMonitoringService,
+    CommunityEnhancementService,
+    OpenCogServiceSymbol,
+    KnowledgeManagementServiceSymbol,
+    DeductiveReasoningServiceSymbol,
+    InductiveReasoningServiceSymbol,
+    AbductiveReasoningServiceSymbol,
+    SupervisedLearningServiceSymbol,
+    UnsupervisedLearningServiceSymbol,
+    ReinforcementLearningServiceSymbol,
+    AdvancedLearningServiceSymbol,
+    ProductionOptimizationServiceSymbol,
+    ProductionConfigurationServiceSymbol,
+    ProductionDeploymentServiceSymbol,
+    ProductionMonitoringServiceSymbol,
+    CommunityEnhancementServiceSymbol,
+    WidgetFactorySymbol,
+    FrontendApplicationContributionSymbol,
+    CommandContributionSymbol,
+    MenuContributionSymbol,
+    ChatAgentSymbol
 } from '../common';
 import { AdvancedLearningService } from '../common/advanced-learning-service';
 import { FrontendOpenCogService } from './frontend-opencog-service';
@@ -81,7 +104,6 @@ import {
     CognitiveAssistantContribution,
     MultiModalCognitiveContribution
 } from './cognitive-widgets/cognitive-widgets-contribution';
-import { WidgetFactory } from '@theia/core/lib/browser/widget-manager';
 // OpenCog Chat Agent
 import { OpenCogChatAgent } from './opencog-chat-agent';
 import { ChatAgent } from '@theia/ai-chat/lib/common/chat-agents';
@@ -92,43 +114,40 @@ import { ProductionMonitoringWidget } from './production-monitoring-widget';
 import { FrontendProductionOptimizationService } from './frontend-production-optimization-service';
 import { ProductionMonitoringContribution } from './production-monitoring-contribution';
 // Phase 6: Production Deployment Services
-import { 
-    ProductionConfigurationService,
-    ProductionDeploymentService,
-    ProductionMonitoringService,
-    CommunityEnhancementService
-} from '../common';
 import { FrontendProductionConfigurationService } from './frontend-production-configuration';
 import { FrontendCommunityEnhancementService } from './frontend-community-enhancement';
 
 export default new ContainerModule(bind => {
+    // Note: Frontend services typically connect to backend via RPC
+    // Using symbols to avoid TS2693 "Type vs Value" errors
+    
     // Bind the frontend OpenCog service
-    bind(OpenCogService).to(FrontendOpenCogService).inSingletonScope();
+    bind(OpenCogServiceSymbol).to(FrontendOpenCogService).inSingletonScope();
     
     // Bind the frontend Knowledge Management service
-    bind(KnowledgeManagementService).to(FrontendKnowledgeManagementService).inSingletonScope();
+    bind(KnowledgeManagementServiceSymbol).to(FrontendKnowledgeManagementService).inSingletonScope();
     
     // Bind the frontend Advanced Learning service
-    bind(AdvancedLearningService).to(FrontendAdvancedLearningService).inSingletonScope();
+    bind(AdvancedLearningServiceSymbol).to(FrontendAdvancedLearningService).inSingletonScope();
     
     // Phase 5: Bind the frontend Production Optimization service
-    bind(ProductionOptimizationService).to(FrontendProductionOptimizationService).inSingletonScope();
+    bind(ProductionOptimizationServiceSymbol).to(FrontendProductionOptimizationService).inSingletonScope();
     
     // Phase 6: Bind Production Deployment Services
-    bind(ProductionConfigurationService).to(FrontendProductionConfigurationService).inSingletonScope();
-    bind(ProductionDeploymentService).toSelf().inSingletonScope();
-    bind(ProductionMonitoringService).toSelf().inSingletonScope();
-    bind(CommunityEnhancementService).to(FrontendCommunityEnhancementService).inSingletonScope();
+    bind(ProductionConfigurationServiceSymbol).to(FrontendProductionConfigurationService).inSingletonScope();
+    bind(ProductionDeploymentServiceSymbol).toSelf().inSingletonScope();
+    bind(ProductionMonitoringServiceSymbol).toSelf().inSingletonScope();
+    bind(CommunityEnhancementServiceSymbol).to(FrontendCommunityEnhancementService).inSingletonScope();
     
     // Phase 3: Bind frontend reasoning services
-    bind(DeductiveReasoningService).to(FrontendDeductiveReasoningService).inSingletonScope();
-    bind(InductiveReasoningService).to(FrontendInductiveReasoningService).inSingletonScope();
-    bind(AbductiveReasoningService).to(FrontendAbductiveReasoningService).inSingletonScope();
+    bind(DeductiveReasoningServiceSymbol).to(FrontendDeductiveReasoningService).inSingletonScope();
+    bind(InductiveReasoningServiceSymbol).to(FrontendInductiveReasoningService).inSingletonScope();
+    bind(AbductiveReasoningServiceSymbol).to(FrontendAbductiveReasoningService).inSingletonScope();
     
     // Phase 3: Bind frontend learning services
-    bind(SupervisedLearningService).to(FrontendSupervisedLearningService).inSingletonScope();
-    bind(UnsupervisedLearningService).to(FrontendUnsupervisedLearningService).inSingletonScope();
-    bind(ReinforcementLearningService).to(FrontendReinforcementLearningService).inSingletonScope();
+    bind(SupervisedLearningServiceSymbol).to(FrontendSupervisedLearningService).inSingletonScope();
+    bind(UnsupervisedLearningServiceSymbol).to(FrontendUnsupervisedLearningService).inSingletonScope();
+    bind(ReinforcementLearningServiceSymbol).to(FrontendReinforcementLearningService).inSingletonScope();
     
     // Bind the existing agents
     bind(CodeAnalysisAgent).toSelf().inSingletonScope();
@@ -190,33 +209,33 @@ export default new ContainerModule(bind => {
     // Phase 5: Production Monitoring Widget
     bind(ProductionMonitoringWidget).toSelf();
 
-    // Bind widget factories
-    bind(WidgetFactory).toDynamicValue(ctx => ({
+    // Bind widget factories - using symbols to avoid TS2693 Type vs Value errors
+    bind(WidgetFactorySymbol).toDynamicValue((ctx: any) => ({
         id: CodeIntelligenceWidget.ID,
         createWidget: () => ctx.container.get(CodeIntelligenceWidget)
     })).inSingletonScope();
 
-    bind(WidgetFactory).toDynamicValue(ctx => ({
+    bind(WidgetFactorySymbol).toDynamicValue((ctx: any) => ({
         id: LearningProgressWidget.ID,
         createWidget: () => ctx.container.get(LearningProgressWidget)
     })).inSingletonScope();
 
-    bind(WidgetFactory).toDynamicValue(ctx => ({
+    bind(WidgetFactorySymbol).toDynamicValue((ctx: any) => ({
         id: KnowledgeExplorerWidget.ID,
         createWidget: () => ctx.container.get(KnowledgeExplorerWidget)
     })).inSingletonScope();
 
-    bind(WidgetFactory).toDynamicValue(ctx => ({
+    bind(WidgetFactorySymbol).toDynamicValue((ctx: any) => ({
         id: CognitiveAssistantWidget.ID,
         createWidget: () => ctx.container.get(CognitiveAssistantWidget)
     })).inSingletonScope();
 
-    bind(WidgetFactory).toDynamicValue(ctx => ({
+    bind(WidgetFactorySymbol).toDynamicValue((ctx: any) => ({
         id: MultiModalCognitiveWidget.ID,
         createWidget: () => ctx.container.get(MultiModalCognitiveWidget)
     })).inSingletonScope();
 
-    bind(WidgetFactory).toDynamicValue(ctx => ({
+    bind(WidgetFactorySymbol).toDynamicValue((ctx: any) => ({
         id: ProductionMonitoringWidget.ID,
         createWidget: () => ctx.container.get(ProductionMonitoringWidget)
     })).inSingletonScope();
@@ -229,16 +248,16 @@ export default new ContainerModule(bind => {
     bind(MultiModalCognitiveContribution).toSelf().inSingletonScope();
     bind(ProductionMonitoringContribution).toSelf().inSingletonScope();
 
-    // Register contributions
-    bind(FrontendApplicationContribution).toService(CognitiveWidgetsContribution);
-    bind(CommandContribution).toService(CognitiveWidgetsContribution);
-    bind(MenuContribution).toService(CognitiveWidgetsContribution);
+    // Register contributions - using symbols to avoid TS2693 Type vs Value errors
+    bind(FrontendApplicationContributionSymbol).toService(CognitiveWidgetsContribution);
+    bind(CommandContributionSymbol).toService(CognitiveWidgetsContribution);
+    bind(MenuContributionSymbol).toService(CognitiveWidgetsContribution);
 
     // Register production monitoring contributions
-    bind(CommandContribution).toService(ProductionMonitoringContribution);
-    bind(MenuContribution).toService(ProductionMonitoringContribution);
+    bind(CommandContributionSymbol).toService(ProductionMonitoringContribution);
+    bind(MenuContributionSymbol).toService(ProductionMonitoringContribution);
 
-    // Bind OpenCog Chat Agent
+    // Bind OpenCog Chat Agent - using symbol to avoid TS2693 errors
     bind(OpenCogChatAgent).toSelf().inSingletonScope();
-    bind(ChatAgent).toService(OpenCogChatAgent);
+    bind(ChatAgentSymbol).toService(OpenCogChatAgent);
 });
