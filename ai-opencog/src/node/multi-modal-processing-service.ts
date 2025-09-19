@@ -606,7 +606,13 @@ export class MultiModalProcessingService {
             modalities: [data.type],
             instances: [data],
             metadata: {
-                modalityContribution: { [data.type]: 1.0 },
+                modalityContribution: { 
+                    text: data.type === 'text' ? 1.0 : 0, 
+                    image: data.type === 'image' ? 1.0 : 0, 
+                    audio: data.type === 'audio' ? 1.0 : 0, 
+                    tensor: data.type === 'tensor' ? 1.0 : 0, 
+                    mixed: data.type === 'mixed' ? 1.0 : 0 
+                },
                 crossModalCorrelation: 0,
                 temporalConsistency: 0.8,
                 cognitiveComplexity: 0.5

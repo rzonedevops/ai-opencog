@@ -37,8 +37,10 @@ export interface RefactoringSuggestion {
 
 export interface CodeQualityIssue {
     id: string;
+    type: string;
     severity: 'error' | 'warning' | 'info';
     message: string;
+    line: number;
     range: Range;
     suggestions: RefactoringSuggestion[];
 }

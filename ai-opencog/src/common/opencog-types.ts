@@ -51,6 +51,7 @@ export interface AttentionValue {
 export interface AtomPattern {
     type?: string;
     name?: string;
+    pattern?: Record<string, any>;
     truthValueThreshold?: TruthValue;
     attentionThreshold?: AttentionValue;
     bindVariables?: Record<string, any>;
@@ -100,6 +101,8 @@ export interface LearningContext {
     workspaceId?: string;
     projectType?: string;
     currentTask?: string;
+    request?: any;
+    response?: any;
     userExperience?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
     preferences?: Record<string, any>;
     environmentInfo?: Record<string, any>;
@@ -677,6 +680,7 @@ export interface AdvancedLearningResult {
     predictions?: any[];
     modelState?: any;
     nextActions?: string[];
+    metadata?: Record<string, any>;
 }
 
 /**
@@ -685,6 +689,7 @@ export interface AdvancedLearningResult {
 export interface AdvancedLearningModel {
     id: string;
     type: AdvancedLearningType;
+    algorithm?: string;
     config: any;
     state: any;
     version: number;

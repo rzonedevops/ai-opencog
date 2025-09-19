@@ -1884,7 +1884,7 @@ export class AtomSpaceService implements OpenCogService {
             type: 'ConceptNode',
             name: `AdvancedTraining_${modelId}`,
             truthValue: { strength: result.metrics.accuracy || 0.5, confidence: 0.8 },
-            attentionValue: { sti: 800, lti: 0, vlti: false },
+            attentionValue: { sti: 800, lti: 0, vlti: 0 },
             metadata: {
                 algorithm: data.type,
                 performance: result.metrics,
@@ -1993,7 +1993,7 @@ export class AtomSpaceService implements OpenCogService {
             type: 'ConceptNode',
             name: `NeuralNetwork_${modelId}`,
             truthValue: { strength: 0.5, confidence: 0.9 },
-            attentionValue: { sti: 1000, lti: 0, vlti: false },
+            attentionValue: { sti: 1000, lti: 0, vlti: 0 },
             metadata: { model }
         };
         
@@ -2360,16 +2360,9 @@ export class AtomSpaceService implements OpenCogService {
                     targetAdaptation: 0.3 + Math.random() * 0.4
                 }
             })),
-            metrics: {
-                accuracy,
-                loss,
-                trainingTime,
-                transferEfficiency: 0.8 + Math.random() * 0.15,
-                domainSimilarity: 0.6 + Math.random() * 0.3
-            },
             metadata: {
                 targetDataSize: targetData.length,
-                transferStrategy: config.transferStrategy === 'feature_extraction' ? 'feature_extraction' : 'fine_tuning',
+                transferStrategy: model.config?.transferStrategy === 'feature_extraction' ? 'feature_extraction' : 'fine_tuning',
                 converged: true
             }
         };
