@@ -1229,7 +1229,7 @@ export class AtomSpaceService implements OpenCogService {
     private async processPersonalizationLearning(data: LearningData): Promise<void> {
         // Process personalization learning
         if (data.context?.userId) {
-            await this.updatePersonalizationModel(data.context.userId, data.input);
+            await this.updateUserPersonalizationData(data.context.userId, data.input);
         }
     }
 
@@ -1413,7 +1413,7 @@ export class AtomSpaceService implements OpenCogService {
         this.learningModels.set(modelId, model);
     }
 
-    private async updatePersonalizationModel(userId: string, preferences: any): Promise<void> {
+    private async updateUserPersonalizationData(userId: string, preferences: any): Promise<void> {
         const existing = this.userPersonalization.get(userId) || {};
         const updated = { ...existing, ...preferences, lastUpdated: Date.now() };
         this.userPersonalization.set(userId, updated);
