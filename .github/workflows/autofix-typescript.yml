@@ -75,21 +75,29 @@ jobs:
           # Run TypeScript compiler and capture errors
           npx tsc --noEmit --skipLibCheck 2>&1 | tee typescript-errors.log || true
           
-          # Count errors
+          # Validate output file exists and has content before processing
+          if [[ ! -f "typescript-errors.log" ]] || [[ ! -s "typescript-errors.log" ]]; then
+            echo "Output file typescript-errors.log is missing or empty. Creating empty log."
+            touch typescript-errors.log
+            echo "No TypeScript errors found or compilation failed to generate output." > typescript-errors.log
+          fi
+          
+          # Count errors with safe default
           ERROR_COUNT=$(grep -c "error TS" typescript-errors.log || echo "0")
           echo "Found $ERROR_COUNT TypeScript errors"
           echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
           
-          # Check if we have fixable errors
+          # Check if we have fixable errors - use safe numeric comparisons
           FIXABLE_ERRORS=0
           
-          # Count specific fixable error types
+          # Count specific fixable error types with safe defaults
           MISSING_EXPORTS=$(grep -c "has no exported member named" typescript-errors.log || echo "0")
           DISPOSABLE_PUSH=$(grep -c "Property 'push' does not exist on type 'DisposableCollection'" typescript-errors.log || echo "0")
           MISSING_ARGS=$(grep -c "Expected .* arguments, but got .*" typescript-errors.log || echo "0")
           MISSING_MODULES=$(grep -c "Cannot find module" typescript-errors.log || echo "0")
           
-          FIXABLE_ERRORS=$((MISSING_EXPORTS + DISPOSABLE_PUSH + MISSING_ARGS + MISSING_MODULES))
+          # Safe arithmetic with validated numbers
+          FIXABLE_ERRORS=$((${MISSING_EXPORTS:-0} + ${DISPOSABLE_PUSH:-0} + ${MISSING_ARGS:-0} + ${MISSING_MODULES:-0}))
           
           echo "fixable_errors=$FIXABLE_ERRORS" >> $GITHUB_OUTPUT
           echo "missing_exports=$MISSING_EXPORTS" >> $GITHUB_OUTPUT
@@ -97,13 +105,15 @@ jobs:
           echo "missing_args=$MISSING_ARGS" >> $GITHUB_OUTPUT
           echo "missing_modules=$MISSING_MODULES" >> $GITHUB_OUTPUT
           
-          # Upload error log as artifact
-          if [ -f typescript-errors.log ]; then
-            echo "Uploading error log..."
+          # Upload error log as artifact only if file exists and has content
+          if [[ -f "typescript-errors.log" ]] && [[ -s "typescript-errors.log" ]]; then
+            echo "Error log file validated and ready for upload"
+          else
+            echo "Warning: Error log file is missing or empty"
           fi
 
       - name: Apply automatic fixes
-        if: steps.analyze.outputs.fixable_errors > 0
+        if: steps.analyze.outputs.fixable_errors > '0'
         id: autofix
         run: |
           cd ai-opencog
@@ -111,8 +121,18 @@ jobs:
           
           CHANGES_MADE=false
           
+          # Set safe defaults for all numeric variables
+          MISSING_EXPORTS="${{ steps.analyze.outputs.missing_exports }}"
+          MISSING_MODULES="${{ steps.analyze.outputs.missing_modules }}"
+          DISPOSABLE_PUSH="${{ steps.analyze.outputs.disposable_push }}"
+          
+          # Ensure variables are numeric with safe defaults
+          MISSING_EXPORTS="${MISSING_EXPORTS:-0}"
+          MISSING_MODULES="${MISSING_MODULES:-0}"
+          DISPOSABLE_PUSH="${DISPOSABLE_PUSH:-0}"
+          
           # Fix 1: Update stub files for missing exports
-          if [ "${{ steps.analyze.outputs.missing_exports }}" -gt "0" ] || [ "${{ steps.analyze.outputs.missing_modules }}" -gt "0" ]; then
+          if [[ "${MISSING_EXPORTS:-0}" -gt 0 ]] || [[ "${MISSING_MODULES:-0}" -gt 0 ]]; then
             echo "Updating stub files for missing exports/modules..."
             
             # Enhance create-stubs.js if it exists
@@ -187,7 +207,7 @@ jobs:
           fi
           
           # Fix 2: Fix DisposableCollection.push() usage patterns
-          if [ "${{ steps.analyze.outputs.disposable_push }}" -gt "0" ]; then
+          if [[ "${DISPOSABLE_PUSH:-0}" -gt 0 ]]; then
             echo "Fixing DisposableCollection.push() usage patterns..."
             
             # Find files with multiple argument push calls and fix them
@@ -258,14 +278,24 @@ jobs:
           # Run TypeScript compiler again
           npx tsc --noEmit --skipLibCheck 2>&1 | tee typescript-errors-after.log || true
           
-          # Count remaining errors
+          # Validate output file exists before processing
+          if [[ ! -f "typescript-errors-after.log" ]]; then
+            echo "Warning: Post-fix error log is missing. Creating empty file."
+            touch typescript-errors-after.log
+          fi
+          
+          # Count remaining errors with safe defaults
           ERROR_COUNT_AFTER=$(grep -c "error TS" typescript-errors-after.log || echo "0")
           ERROR_COUNT_BEFORE="${{ steps.analyze.outputs.error_count }}"
+          
+          # Ensure variables are numeric with safe defaults
+          ERROR_COUNT_BEFORE="${ERROR_COUNT_BEFORE:-0}"
+          ERROR_COUNT_AFTER="${ERROR_COUNT_AFTER:-0}"
           
           echo "TypeScript errors before: $ERROR_COUNT_BEFORE"
           echo "TypeScript errors after: $ERROR_COUNT_AFTER"
           
-          if [ "$ERROR_COUNT_AFTER" -lt "$ERROR_COUNT_BEFORE" ]; then
+          if [[ "$ERROR_COUNT_AFTER" -lt "$ERROR_COUNT_BEFORE" ]]; then
             ERRORS_FIXED=$((ERROR_COUNT_BEFORE - ERROR_COUNT_AFTER))
             echo "✅ Successfully fixed $ERRORS_FIXED TypeScript errors!"
             echo "errors_fixed=$ERRORS_FIXED" >> $GITHUB_OUTPUT
@@ -339,26 +369,42 @@ jobs:
             ai-opencog/tsconfig*.bak
             ai-opencog/src/**/*.bak
           retention-days: 7
+          if-no-files-found: warn
 
       - name: Summary
         if: always()
         run: |
           cd ai-opencog
+          
+          # Sanitize output data for GitHub Actions
+          ERROR_COUNT="${{ steps.analyze.outputs.error_count }}"
+          FIXABLE_ERRORS="${{ steps.analyze.outputs.fixable_errors }}"
+          ERRORS_FIXED="${{ steps.verify.outputs.errors_fixed }}"
+          CHANGES_MADE="${{ steps.autofix.outputs.changes_made }}"
+          VERIFICATION_SUCCESS="${{ steps.verify.outputs.verification_success }}"
+          
+          # Set safe defaults
+          ERROR_COUNT="${ERROR_COUNT:-Unknown}"
+          FIXABLE_ERRORS="${FIXABLE_ERRORS:-Unknown}"
+          ERRORS_FIXED="${ERRORS_FIXED:-Unknown}"
+          CHANGES_MADE="${CHANGES_MADE:-false}"
+          VERIFICATION_SUCCESS="${VERIFICATION_SUCCESS:-N/A}"
+          
           echo "## 📊 TypeScript Auto-fix Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Total errors found | ${{ steps.analyze.outputs.error_count || 'Unknown' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Fixable errors | ${{ steps.analyze.outputs.fixable_errors || 'Unknown' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Errors fixed | ${{ steps.verify.outputs.errors_fixed || 'Unknown' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Changes made | ${{ steps.autofix.outputs.changes_made || 'false' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Verification success | ${{ steps.verify.outputs.verification_success || 'N/A' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total errors found | $ERROR_COUNT |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fixable errors | $FIXABLE_ERRORS |" >> $GITHUB_STEP_SUMMARY
+          echo "| Errors fixed | $ERRORS_FIXED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Changes made | $CHANGES_MADE |" >> $GITHUB_STEP_SUMMARY
+          echo "| Verification success | $VERIFICATION_SUCCESS |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ steps.autofix.outputs.changes_made }}" = "true" ]; then
+          if [[ "$CHANGES_MADE" == "true" ]]; then
             echo "### ✅ Auto-fixes Applied" >> $GITHUB_STEP_SUMMARY
             echo "The workflow successfully applied automatic fixes for TypeScript errors." >> $GITHUB_STEP_SUMMARY
-            if [ "${{ github.event.inputs.create_pr }}" != "false" ]; then
+            if [[ "${{ github.event.inputs.create_pr }}" != "false" ]]; then
               echo "A pull request has been created with the fixes." >> $GITHUB_STEP_SUMMARY
             fi
           else
