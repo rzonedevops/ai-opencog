@@ -18,8 +18,11 @@ const dirs = [
   'node_modules/@theia/debug/lib/browser',
   'node_modules/@theia/debug/lib/common',
   'node_modules/@theia/ai-chat/lib',
+  'node_modules/@theia/ai-core',
   'node_modules/@theia/ai-core/lib',
   'node_modules/@theia/core/lib/browser/preferences',
+  'node_modules/@theia/core/lib/browser',
+  'node_modules/@theia/core/lib/common',
   'node_modules/@theia/monaco-editor-core'
 ];
 
@@ -32,6 +35,7 @@ const stubs = {
   'node_modules/@theia/core/shared/inversify.d.ts': `
 export declare function injectable<T>(): (target: T) => T;
 export declare function inject(token: any): any;
+export declare function named(name: string): any;
 export declare class Container {
   get(token: any): any;
   bind(token: any): any;
@@ -79,6 +83,7 @@ export class DebugService {
   onDidStartDebugSession: any;
   onDidTerminateDebugSession: any;
   start: any;
+  getModel(): any;
 }
 `,
   'node_modules/@theia/filesystem/lib/browser/file-service.d.ts': `
@@ -99,11 +104,13 @@ export class MonacoEditor {
   'node_modules/@theia/workspace/lib/browser/workspace-service.d.ts': `
 export class Workspace {
   readonly roots: any[];
+  tryGetRoots(): any[];
 }
 `,
   'node_modules/@theia/core/lib/common/uri.d.ts': `
 declare class URI {
   static parse(value: string): URI;
+  constructor(value?: string);
   toString(): string;
 }
 export default URI;
@@ -112,9 +119,15 @@ export default URI;
 declare namespace monaco {
   namespace editor {
     const createModel: any;
+    interface ITextModel {
+      [key: string]: any;
+    }
   }
   namespace languages {
     const registerCodeActionProvider: any;
+  }
+  class Range {
+    constructor(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number);
   }
 }
 export = monaco;
@@ -138,6 +151,54 @@ export interface DebugConfiguration {
   request: string;
   name: string;
   [key: string]: any;
+}
+`,
+  'node_modules/@theia/ai-core/index.d.ts': `
+export declare class Agent {
+  constructor(...args: any[]);
+}
+export const Agent: any;
+`,
+  'node_modules/@theia/core/lib/common/rpc-proxy.d.ts': `
+export interface RpcProxy<T> extends T {
+}
+export class RpcProxyImpl<T> implements RpcProxy<T> {
+  constructor(target: T, connectionProvider: any);
+}
+`,
+  'node_modules/@theia/core/lib/browser/index.d.ts': `
+export interface FrontendApplicationContribution {
+  initialize?(): void;
+  configure?(app: any): void;
+}
+export interface WidgetFactory {
+  createWidget(options?: any): any;
+}
+`,
+  'node_modules/@theia/core/lib/common/index.d.ts': `
+export interface CommandContribution {
+  registerCommands(registry: any): void;
+}
+export interface MenuContribution {
+  registerMenus(menus: any): void;
+}
+`,
+  'node_modules/@theia/core/lib/common/logger.d.ts': `
+export interface ILogger {
+  log(level: string, message: string, ...args: any[]): void;
+}
+export class Logger implements ILogger {
+  log(level: string, message: string, ...args: any[]): void;
+}
+`,
+  'node_modules/@theia/core/lib/common/event.d.ts': `
+export class Emitter<T> {
+  readonly event: any;
+  fire(event: T): void;
+  dispose(): void;
+}
+export interface Event<T> {
+  (listener: (e: T) => any): any;
 }
 `,
 };

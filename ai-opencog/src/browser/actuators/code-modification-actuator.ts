@@ -19,7 +19,7 @@ import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
 import { FileService } from '@theia/filesystem/lib/browser/file-service';
 import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
 import { Workspace } from '@theia/workspace/lib/browser/workspace-service';
-import { RefactoringOperation, ActuatorResult, Actuator } from '../common/sensor-motor-types';
+import { RefactoringOperation, ActuatorResult, Actuator } from '../../common';
 import URI from '@theia/core/lib/common/uri';
 import * as monaco from '@theia/monaco-editor-core';
 

@@ -20,7 +20,7 @@ import { TaskService } from '@theia/task/lib/browser/task-service';
 import { TaskConfiguration } from '@theia/task/lib/common/task-protocol';
 import { DebugService } from '@theia/debug/lib/browser/debug-service';
 import { DebugConfiguration } from '@theia/debug/lib/common/debug-common';
-import { EditorConfiguration, BuildConfiguration, ActuatorResult, Actuator } from '../common/sensor-motor-types';
+import { EditorConfiguration, BuildConfiguration, ActuatorResult, Actuator } from '../../common';
 
 /**
  * Controls development tools including editor configuration, build automation, and debugging assistance
