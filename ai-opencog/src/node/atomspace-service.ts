@@ -74,6 +74,9 @@ export class AtomSpaceService implements OpenCogService {
     private learningHistory: LearningData[] = [];
     private nextModelId = 1;
     
+    // Advanced learning models storage for SSR backend
+    private advancedLearningModels: Map<string, AdvancedLearningModel> = new Map();
+    
     // Advanced reasoning engines
     private plnEngine: PLNReasoningEngine;
     private patternEngine: PatternMatchingEngine;
@@ -2271,6 +2274,115 @@ export class AtomSpaceService implements OpenCogService {
         }
         
         return totalParams;
+    }
+
+    /**
+     * Transfer learning operations - Required for SSR backend
+     */
+    async initializeTransferLearning(config: TransferLearningConfig): Promise<AdvancedLearningModel> {
+        const modelId = `transfer_model_${this.nextModelId++}`;
+        
+        const model: AdvancedLearningModel = {
+            id: modelId,
+            type: 'transfer_learning',
+            algorithm: 'transfer_learning',
+            parameters: {
+                sourceModel: config.sourceModel || 'pretrained_base',
+                targetDomain: config.targetDomain || 'default',
+                freezeFeatures: config.freezeFeatures !== false,
+                learningRate: config.learningRate || 0.001,
+                ...config
+            },
+            metrics: {
+                accuracy: 0,
+                loss: 0,
+                trainingTime: 0
+            },
+            status: 'initialized',
+            created: new Date().toISOString(),
+            lastUpdated: new Date().toISOString()
+        };
+
+        // Store in models map for SSR backend state management
+        if (!this.advancedLearningModels) {
+            this.advancedLearningModels = new Map();
+        }
+        this.advancedLearningModels.set(modelId, model);
+
+        return model;
+    }
+
+    async performTransferLearning(modelId: string, targetData: AdvancedLearningData[]): Promise<AdvancedLearningResult> {
+        if (!this.advancedLearningModels) {
+            this.advancedLearningModels = new Map();
+        }
+        
+        const model = this.advancedLearningModels.get(modelId);
+        if (!model) {
+            throw new Error(`Transfer learning model not found: ${modelId}`);
+        }
+
+        // Simulate transfer learning process for SSR backend
+        const startTime = Date.now();
+        
+        // Mock transfer learning computation
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const trainingTime = Date.now() - startTime;
+        const accuracy = 0.7 + Math.random() * 0.25; // 70-95% accuracy range
+        const loss = Math.random() * 0.3; // 0-30% loss
+
+        // Update model metrics
+        model.metrics = {
+            accuracy,
+            loss,
+            trainingTime
+        };
+        model.status = 'trained';
+        model.lastUpdated = new Date().toISOString();
+
+        return {
+            modelId,
+            type: 'transfer_learning',
+            predictions: targetData.map((data, index) => ({
+                input: data,
+                prediction: this.generateTransferPrediction(data),
+                confidence: accuracy * (0.8 + Math.random() * 0.2),
+                metadata: {
+                    sourceModelContribution: 0.6 + Math.random() * 0.3,
+                    targetAdaptation: 0.3 + Math.random() * 0.4
+                }
+            })),
+            metrics: {
+                accuracy,
+                loss,
+                trainingTime,
+                transferEfficiency: 0.8 + Math.random() * 0.15,
+                domainSimilarity: 0.6 + Math.random() * 0.3
+            },
+            metadata: {
+                targetDataSize: targetData.length,
+                transferStrategy: model.parameters.freezeFeatures ? 'feature_extraction' : 'fine_tuning',
+                converged: true
+            }
+        };
+    }
+
+    private generateTransferPrediction(data: AdvancedLearningData): any {
+        // Generate mock transfer learning prediction based on data type
+        if (data.tensorData) {
+            return {
+                class: Math.round(Math.random()),
+                features: Array(data.tensorData.shape[0] || 10).fill(0).map(() => Math.random()),
+                transferScore: 0.7 + Math.random() * 0.3
+            };
+        }
+        
+        return {
+            value: Math.random(),
+            category: Math.round(Math.random() * 5),
+            transferConfidence: 0.8 + Math.random() * 0.2
+        };
     }
 
     // Knowledge management service access

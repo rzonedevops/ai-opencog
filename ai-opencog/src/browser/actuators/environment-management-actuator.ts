@@ -16,7 +16,7 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { PreferenceService } from '@theia/core/lib/browser/preferences/preference-service';
-import { ResourceAllocation, ServiceConfiguration, ActuatorResult, Actuator } from '../common/sensor-motor-types';
+import { ResourceAllocation, ServiceConfiguration, ActuatorResult, Actuator } from '../../common';
 
 /**
  * Manages development environment including resource allocation, service configuration, and performance tuning

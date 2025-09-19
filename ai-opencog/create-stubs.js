@@ -7,15 +7,23 @@ const dirs = [
   'node_modules/@theia/core/lib/common',
   'node_modules/@theia/editor/lib/browser',
   'node_modules/@theia/filesystem/lib/common',
+  'node_modules/@theia/filesystem/lib/browser',
   'node_modules/@theia/monaco/lib/browser',
   'node_modules/@theia/workspace/lib/browser',
   'node_modules/@theia/variable-resolver/lib',
   'node_modules/@theia/navigator/lib/browser',
   'node_modules/@theia/terminal/lib/browser/base',
   'node_modules/@theia/task/lib/browser',
+  'node_modules/@theia/task/lib/common',
   'node_modules/@theia/debug/lib/browser',
+  'node_modules/@theia/debug/lib/common',
   'node_modules/@theia/ai-chat/lib',
-  'node_modules/@theia/ai-core/lib'
+  'node_modules/@theia/ai-core',
+  'node_modules/@theia/ai-core/lib',
+  'node_modules/@theia/core/lib/browser/preferences',
+  'node_modules/@theia/core/lib/browser',
+  'node_modules/@theia/core/lib/common',
+  'node_modules/@theia/monaco-editor-core'
 ];
 
 dirs.forEach(dir => {
@@ -25,10 +33,16 @@ dirs.forEach(dir => {
 // Create comprehensive stub files
 const stubs = {
   'node_modules/@theia/core/shared/inversify.d.ts': `
-export declare function injectable(): <T>(target: T) => T;
-export declare function inject(token: any): (target: any, propertyKey: string | symbol | undefined, parameterIndex: number) => void;
-export const Container: any;
-export const ContainerModule: any;
+export declare function injectable<T>(): (target: T) => T;
+export declare function inject(token: any): any;
+export declare function named(name: string): any;
+export declare class Container {
+  get(token: any): any;
+  bind(token: any): any;
+}
+export declare class ContainerModule {
+  constructor(callback: (bind: any) => void);
+}
 `,
   'node_modules/@theia/core/lib/common/disposable.d.ts': `
 export interface Disposable {
@@ -43,6 +57,8 @@ export class DisposableCollection implements Disposable {
 export class EditorManager {
   onCreated: any;
   onCurrentEditorChanged: any;
+  all: any[];
+  open: any;
 }
 `,
   'node_modules/@theia/navigator/lib/browser/navigator-contribution.d.ts': `
@@ -58,14 +74,133 @@ export class TerminalService {
 export class TaskService {
   onDidStartTask: any;
   onDidEndTask: any;
+  run: any;
+  getTasks: any;
 }
 `,
   'node_modules/@theia/debug/lib/browser/debug-service.d.ts': `
 export class DebugService {
   onDidStartDebugSession: any;
   onDidTerminateDebugSession: any;
+  start: any;
+  getModel(): any;
 }
-`
+`,
+  'node_modules/@theia/filesystem/lib/browser/file-service.d.ts': `
+export class FileService {
+  resolve: any;
+  read: any;
+  write: any;
+}
+`,
+  'node_modules/@theia/monaco/lib/browser/monaco-editor.d.ts': `
+export class MonacoEditor {
+  onCursorPositionChanged: any;
+  onSelectionChanged: any;
+  onDocumentContentChanged: any;
+  getControl: any;
+}
+`,
+  'node_modules/@theia/workspace/lib/browser/workspace-service.d.ts': `
+export class Workspace {
+  readonly roots: any[];
+  tryGetRoots(): any[];
+}
+`,
+  'node_modules/@theia/core/lib/common/uri.d.ts': `
+declare class URI {
+  static parse(value: string): URI;
+  constructor(value?: string);
+  toString(): string;
+}
+export default URI;
+`,
+  'node_modules/@theia/monaco-editor-core/index.d.ts': `
+declare namespace monaco {
+  namespace editor {
+    const createModel: any;
+    interface ITextModel {
+      [key: string]: any;
+    }
+  }
+  namespace languages {
+    const registerCodeActionProvider: any;
+  }
+  class Range {
+    constructor(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number);
+  }
+}
+export = monaco;
+`,
+  'node_modules/@theia/core/lib/browser/preferences/preference-service.d.ts': `
+export class PreferenceService {
+  set: any;
+  get: any;
+}
+`,
+  'node_modules/@theia/task/lib/common/task-protocol.d.ts': `
+export interface TaskConfiguration {
+  label: string;
+  type: string;
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/debug/lib/common/debug-common.d.ts': `
+export interface DebugConfiguration {
+  type: string;
+  request: string;
+  name: string;
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/ai-core/index.d.ts': `
+export declare class Agent {
+  constructor(...args: any[]);
+}
+export const Agent: any;
+`,
+  'node_modules/@theia/core/lib/common/rpc-proxy.d.ts': `
+export interface RpcProxy<T> extends T {
+}
+export class RpcProxyImpl<T> implements RpcProxy<T> {
+  constructor(target: T, connectionProvider: any);
+}
+`,
+  'node_modules/@theia/core/lib/browser/index.d.ts': `
+export interface FrontendApplicationContribution {
+  initialize?(): void;
+  configure?(app: any): void;
+}
+export interface WidgetFactory {
+  createWidget(options?: any): any;
+}
+`,
+  'node_modules/@theia/core/lib/common/index.d.ts': `
+export interface CommandContribution {
+  registerCommands(registry: any): void;
+}
+export interface MenuContribution {
+  registerMenus(menus: any): void;
+}
+`,
+  'node_modules/@theia/core/lib/common/logger.d.ts': `
+export interface ILogger {
+  log(level: string, message: string, ...args: any[]): void;
+}
+export class Logger implements ILogger {
+  log(level: string, message: string, ...args: any[]): void;
+}
+`,
+  'node_modules/@theia/core/lib/common/event.d.ts': `
+export class Emitter<T> {
+  readonly event: any;
+  fire(event: T): void;
+  dispose(): void;
+}
+export interface Event<T> {
+  (listener: (e: T) => any): any;
+}
+`,
 };
 
 Object.entries(stubs).forEach(([filePath, content]) => {

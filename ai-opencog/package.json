@@ -74,7 +74,8 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
-    "typescript": "~5.0.4"
+    "typescript": "~5.0.4",
+    "inversify": "^6.0.0"
   },
   "peerDependencies": {
     "@theia/ai-chat": "1.64.1"
