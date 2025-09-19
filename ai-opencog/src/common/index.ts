@@ -34,3 +34,4 @@ export * from './production-configuration';
 export * from './production-deployment';
 export * from './production-monitoring';
 export * from './community-enhancement';
+export * from './service-symbols';

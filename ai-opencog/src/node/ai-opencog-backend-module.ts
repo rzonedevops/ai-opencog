@@ -17,27 +17,30 @@
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { ConnectionHandler, RpcConnectionHandler } from '@theia/core/lib/common/messaging';
 import { 
-    OpenCogService, 
     OPENCOG_SERVICE_PATH,
-    KnowledgeManagementService,
     KNOWLEDGE_MANAGEMENT_SERVICE_PATH,
-    DeductiveReasoningService,
     DEDUCTIVE_REASONING_SERVICE_PATH,
-    InductiveReasoningService,
     INDUCTIVE_REASONING_SERVICE_PATH,
-    AbductiveReasoningService,
     ABDUCTIVE_REASONING_SERVICE_PATH,
-    SupervisedLearningService,
     SUPERVISED_LEARNING_SERVICE_PATH,
-    UnsupervisedLearningService,
     UNSUPERVISED_LEARNING_SERVICE_PATH,
-    ReinforcementLearningService,
     REINFORCEMENT_LEARNING_SERVICE_PATH,
-    DistributedReasoningService,
     DISTRIBUTED_REASONING_SERVICE_PATH,
-    ProductionOptimizationService,
     PRODUCTION_OPTIMIZATION_SERVICE_PATH
 } from '../common';
+import {
+    OpenCogServiceSymbol,
+    KnowledgeManagementServiceSymbol,
+    DeductiveReasoningServiceSymbol,
+    InductiveReasoningServiceSymbol,
+    AbductiveReasoningServiceSymbol,
+    SupervisedLearningServiceSymbol,
+    UnsupervisedLearningServiceSymbol,
+    ReinforcementLearningServiceSymbol,
+    AdvancedLearningServiceSymbol,
+    DistributedReasoningServiceSymbol,
+    ProductionOptimizationServiceSymbol
+} from '../common/service-symbols';
 import { AdvancedLearningService, ADVANCED_LEARNING_SERVICE_PATH } from '../common/advanced-learning-service';
 import { AtomSpaceService } from './atomspace-service';
 import { KnowledgeManagementServiceImpl } from './knowledge-management-service-impl';
@@ -60,8 +63,8 @@ import { DistributedReasoningServiceImpl } from './distributed-reasoning-service
 import { ProductionOptimizationServiceImpl } from './production-optimization-service-impl';
 
 export default new ContainerModule(bind => {
-    bind(OpenCogService).to(AtomSpaceService).inSingletonScope();
-    bind(KnowledgeManagementService).to(KnowledgeManagementServiceImpl).inSingletonScope();
+    bind(OpenCogServiceSymbol).to(AtomSpaceService).inSingletonScope();
+    bind(KnowledgeManagementServiceSymbol).to(KnowledgeManagementServiceImpl).inSingletonScope();
     
     // Phase 2: Bind node-based code analysis agent
     bind(CodeAnalysisAgent).toSelf().inSingletonScope();
@@ -73,92 +76,92 @@ export default new ContainerModule(bind => {
     bind(CodeAnalysisReasoningEngine).toSelf().inSingletonScope();
     
     // Phase 3: Bind reasoning services
-    bind(DeductiveReasoningService).to(DeductiveReasoningServiceImpl).inSingletonScope();
-    bind(InductiveReasoningService).to(InductiveReasoningServiceImpl).inSingletonScope();
-    bind(AbductiveReasoningService).to(AbductiveReasoningServiceImpl).inSingletonScope();
+    bind(DeductiveReasoningServiceSymbol).to(DeductiveReasoningServiceImpl).inSingletonScope();
+    bind(InductiveReasoningServiceSymbol).to(InductiveReasoningServiceImpl).inSingletonScope();
+    bind(AbductiveReasoningServiceSymbol).to(AbductiveReasoningServiceImpl).inSingletonScope();
     
     // Phase 3: Bind learning services
-    bind(SupervisedLearningService).to(SupervisedLearningServiceImpl).inSingletonScope();
-    bind(UnsupervisedLearningService).to(UnsupervisedLearningServiceImpl).inSingletonScope();
-    bind(ReinforcementLearningService).to(ReinforcementLearningServiceImpl).inSingletonScope();
+    bind(SupervisedLearningServiceSymbol).to(SupervisedLearningServiceImpl).inSingletonScope();
+    bind(UnsupervisedLearningServiceSymbol).to(UnsupervisedLearningServiceImpl).inSingletonScope();
+    bind(ReinforcementLearningServiceSymbol).to(ReinforcementLearningServiceImpl).inSingletonScope();
     
     // Phase 5: Bind advanced learning service
-    bind(AdvancedLearningService).to(AdvancedLearningServiceImpl).inSingletonScope();
+    bind(AdvancedLearningServiceSymbol).to(AdvancedLearningServiceImpl).inSingletonScope();
     
     // Phase 5: Bind distributed reasoning service
-    bind(DistributedReasoningService).to(DistributedReasoningServiceImpl).inSingletonScope();
+    bind(DistributedReasoningServiceSymbol).to(DistributedReasoningServiceImpl).inSingletonScope();
     
     // Phase 5: Bind production optimization service
-    bind(ProductionOptimizationService).to(ProductionOptimizationServiceImpl).inSingletonScope();
+    bind(ProductionOptimizationServiceSymbol).to(ProductionOptimizationServiceImpl).inSingletonScope();
     
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(OPENCOG_SERVICE_PATH, () =>
-            ctx.container.get(OpenCogService)
+            ctx.container.get(OpenCogServiceSymbol)
         )
     ).inSingletonScope();
 
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(KNOWLEDGE_MANAGEMENT_SERVICE_PATH, () =>
-            ctx.container.get(KnowledgeManagementService)
+            ctx.container.get(KnowledgeManagementServiceSymbol)
         )
     ).inSingletonScope();
     
     // Phase 3: Bind reasoning service connection handlers
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(DEDUCTIVE_REASONING_SERVICE_PATH, () =>
-            ctx.container.get(DeductiveReasoningService)
+            ctx.container.get(DeductiveReasoningServiceSymbol)
         )
     ).inSingletonScope();
     
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(INDUCTIVE_REASONING_SERVICE_PATH, () =>
-            ctx.container.get(InductiveReasoningService)
+            ctx.container.get(InductiveReasoningServiceSymbol)
         )
     ).inSingletonScope();
     
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(ABDUCTIVE_REASONING_SERVICE_PATH, () =>
-            ctx.container.get(AbductiveReasoningService)
+            ctx.container.get(AbductiveReasoningServiceSymbol)
         )
     ).inSingletonScope();
     
     // Phase 3: Bind learning service connection handlers
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(SUPERVISED_LEARNING_SERVICE_PATH, () =>
-            ctx.container.get(SupervisedLearningService)
+            ctx.container.get(SupervisedLearningServiceSymbol)
         )
     ).inSingletonScope();
     
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(UNSUPERVISED_LEARNING_SERVICE_PATH, () =>
-            ctx.container.get(UnsupervisedLearningService)
+            ctx.container.get(UnsupervisedLearningServiceSymbol)
         )
     ).inSingletonScope();
     
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(REINFORCEMENT_LEARNING_SERVICE_PATH, () =>
-            ctx.container.get(ReinforcementLearningService)
+            ctx.container.get(ReinforcementLearningServiceSymbol)
         )
     ).inSingletonScope();
     
     // Phase 5: Bind advanced learning service connection handler
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(ADVANCED_LEARNING_SERVICE_PATH, () =>
-            ctx.container.get(AdvancedLearningService)
+            ctx.container.get(AdvancedLearningServiceSymbol)
         )
     ).inSingletonScope();
     
     // Phase 5: Bind distributed reasoning service connection handler
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(DISTRIBUTED_REASONING_SERVICE_PATH, () =>
-            ctx.container.get(DistributedReasoningService)
+            ctx.container.get(DistributedReasoningServiceSymbol)
         )
     ).inSingletonScope();
     
     // Phase 5: Bind production optimization service connection handler
     bind(ConnectionHandler).toDynamicValue(ctx =>
         new RpcConnectionHandler(PRODUCTION_OPTIMIZATION_SERVICE_PATH, () =>
-            ctx.container.get(ProductionOptimizationService)
+            ctx.container.get(ProductionOptimizationServiceSymbol)
         )
     ).inSingletonScope();
 });

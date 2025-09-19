@@ -79,10 +79,10 @@ export interface TestResults {
  * Performance metrics
  */
 export interface PerformanceMetrics {
-    responseTime: number;
-    throughput: number;
-    errorRate: number;
-    resourceUtilization: Record<string, number>;
+    cpu?: number;
+    memory?: number;
+    responseTime?: number;
+    uptime?: number;
 }
 
 /**

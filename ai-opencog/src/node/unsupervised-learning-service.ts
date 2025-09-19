@@ -70,7 +70,7 @@ export class UnsupervisedLearningServiceImpl implements UnsupervisedLearningServ
             return {
                 patterns: [],
                 confidence: 0,
-                insights: [`Pattern discovery failed: ${error.message}`]
+                insights: [`Pattern discovery failed: ${error instanceof Error ? error.message : String(error)}`]
             };
         }
     }

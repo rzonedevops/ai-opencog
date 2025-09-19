@@ -74,8 +74,9 @@ export interface PersonalizationProfile {
 @injectable()
 export class CognitivePersonalization {
     
-    @inject(OpenCogService)
-    protected readonly opencog: OpenCogService;
+    constructor(
+        @inject(OpenCogService) protected readonly opencog: OpenCogService
+    ) {}
 
     private profiles = new Map<string, PersonalizationProfile>();
 
@@ -91,8 +92,10 @@ export class CognitivePersonalization {
         // Store learning data in OpenCog
         await this.opencog.learn({
             type: 'personalization',
-            userId,
-            preferences,
+            input: preferences,
+            context: {
+                userId
+            },
             timestamp: Date.now()
         });
 
@@ -137,9 +140,11 @@ export class CognitivePersonalization {
 
             // Learn from the pattern in OpenCog
             await this.opencog.learn({
-                type: 'interaction_pattern',
-                userId,
-                pattern: insight,
+                type: 'behavioral',
+                input: insight,
+                context: {
+                    userId
+                },
                 timestamp: Date.now()
             });
         }
