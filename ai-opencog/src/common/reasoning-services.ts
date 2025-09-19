@@ -16,6 +16,9 @@
 
 import { ReasoningResult, UserFeedback } from './opencog-types';
 
+// Re-export ReasoningResult for other modules
+export { ReasoningResult } from './opencog-types';
+
 /**
  * Service paths for reasoning services
  */
