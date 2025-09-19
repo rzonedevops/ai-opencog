@@ -69,9 +69,6 @@ export interface OptimizationResult {
 @injectable()
 export class SystemIntegrationService {
     
-    @inject(OpenCogService)
-    protected readonly opencog: OpenCogService;
-
     private cognitiveCache: CognitiveCache;
     private personalization: CognitivePersonalization;
     private resourceManager: ResourceManager;
@@ -80,9 +77,11 @@ export class SystemIntegrationService {
     private optimizationTimer?: any;
     private readonly optimizationInterval = 300000; // 5 minutes
 
-    constructor() {
+    constructor(
+        @inject(OpenCogService) protected readonly opencog: OpenCogService
+    ) {
         this.cognitiveCache = new CognitiveCache();
-        this.personalization = new CognitivePersonalization();
+        this.personalization = new CognitivePersonalization(opencog);
         this.resourceManager = new ResourceManager();
         this.feedbackIntegration = new FeedbackIntegration();
         

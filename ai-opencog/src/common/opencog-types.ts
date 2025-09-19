@@ -63,6 +63,7 @@ export interface ReasoningQuery {
     type: 'deductive' | 'inductive' | 'abductive' | 'code-analysis' | 'code-completion' | 
           'problem-analysis' | 'approach-selection' | 'debugging-assistance' | 'assistance-analysis';
     atoms?: Atom[];
+    premises?: Atom[];
     context?: any;
     parameters?: Record<string, any>;
 }

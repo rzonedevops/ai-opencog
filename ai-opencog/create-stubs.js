@@ -20,9 +20,11 @@ const dirs = [
   'node_modules/@theia/ai-chat/lib',
   'node_modules/@theia/ai-core',
   'node_modules/@theia/ai-core/lib',
+  'node_modules/@theia/ai-core/lib/common',
   'node_modules/@theia/core/lib/browser/preferences',
   'node_modules/@theia/core/lib/browser',
   'node_modules/@theia/core/lib/common',
+  'node_modules/@theia/core',
   'node_modules/@theia/monaco-editor-core'
 ];
 
@@ -42,6 +44,36 @@ export declare class Container {
 }
 export declare class ContainerModule {
   constructor(callback: (bind: any) => void);
+}
+`,
+  'node_modules/@theia/core/lib/common/messaging.d.ts': `
+export class ConnectionHandler {}
+export class RpcConnectionHandler extends ConnectionHandler {
+  constructor(path: string, factory: () => any);
+}
+`,
+  'node_modules/@theia/ai-core/lib/common/agent.d.ts': `
+export interface Agent {
+  id: string;
+  name: string;
+}
+`,
+  'node_modules/@theia/workspace/lib/browser/index.d.ts': `
+export class WorkspaceService {
+  workspace: any;
+  roots: any[];
+}
+`,
+  'node_modules/@theia/core/lib/browser/widget-manager.d.ts': `
+export class WidgetManager {
+  findWidgets(name: string): any[];
+}
+`,
+  'node_modules/@theia/core/index.d.ts': `
+export class MessageService {
+  info(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
 }
 `,
   'node_modules/@theia/core/lib/common/disposable.d.ts': `

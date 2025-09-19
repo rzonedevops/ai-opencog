@@ -104,7 +104,10 @@ export interface ReasoningSolution {
  * - Collaborative reasoning with team knowledge integration
  */
 @injectable()
-export class AdvancedReasoningAgent extends Agent {
+export class AdvancedReasoningAgent implements Agent {
+
+    id = 'advanced-reasoning-agent';
+    name = 'Advanced Reasoning Agent';
 
     private problemSolvingHistory: Map<string, ProblemContext[]> = new Map();
     private reasoningPatterns: Map<string, any> = new Map();
@@ -116,11 +119,6 @@ export class AdvancedReasoningAgent extends Agent {
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
         @inject(MessageService) private readonly messageService: MessageService
     ) {
-        super(
-            'advanced-reasoning-agent',
-            'Advanced Problem-Solving Reasoner',
-            'Cognitive AI agent for complex software engineering problem-solving and architectural reasoning'
-        );
         this.initializeReasoningCapabilities();
     }
 
@@ -679,13 +677,16 @@ export class AdvancedReasoningAgent extends Agent {
 
     private async learnFromReasoning(problem: ProblemContext, solution: ReasoningSolution): Promise<void> {
         const learningData: LearningData = {
+            type: 'supervised',
             input: JSON.stringify(problem),
-            output: JSON.stringify(solution),
+            expectedOutput: JSON.stringify(solution),
             context: {
                 reasoningType: solution.reasoning.type,
-                domain: problem.domain,
-                complexity: problem.complexity,
-                confidence: solution.confidence
+                environmentInfo: {
+                    domain: problem.domain,
+                    complexity: problem.complexity,
+                    confidence: solution.confidence
+                }
             },
             feedback: {
                 rating: 5, // Neutral - would be updated based on solution effectiveness
@@ -745,9 +746,9 @@ export class AdvancedReasoningAgent extends Agent {
 
     private async discoverRelatedKnowledge(problem: ProblemContext): Promise<any> {
         const discoveryQuery: KnowledgeDiscoveryQuery = {
-            type: 'domain-specific',
+            type: 'semantic',
+            scope: 'domain-specific',
             seedConcepts: [problem.domain, problem.title],
-            scope: 'comprehensive',
             maxResults: 10
         };
 

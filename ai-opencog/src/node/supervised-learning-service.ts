@@ -75,7 +75,7 @@ export class SupervisedLearningServiceImpl implements SupervisedLearningService 
                 success: false,
                 modelUpdated: false,
                 confidence: 0,
-                insights: [`Failed to learn from feedback: ${error.message}`]
+                insights: [`Failed to learn from feedback: ${error instanceof Error ? error.message : String(error)}`]
             };
         }
     }
@@ -123,7 +123,7 @@ export class SupervisedLearningServiceImpl implements SupervisedLearningService 
                 modelUpdated: false,
                 accuracy: 0,
                 confidence: 0,
-                insights: [`Training failed: ${error.message}`]
+                insights: [`Training failed: ${error instanceof Error ? error.message : String(error)}`]
             };
         }
     }
@@ -154,7 +154,11 @@ export class SupervisedLearningServiceImpl implements SupervisedLearningService 
             const mostCommon = this.getMostCommonOutcome(outcomeCounts);
             
             // Calculate confidence based on consistency and sample size
-            const consistency = outcomeCounts.get(mostCommon) / outcomes.length;
+            const mostCommonCount = outcomeCounts.get(mostCommon);
+            if (!mostCommonCount) {
+                throw new Error('Unable to find count for most common outcome');
+            }
+            const consistency = mostCommonCount / outcomes.length;
             const sampleSizeBonus = Math.min(0.3, outcomes.length / 20);
             const confidence = Math.min(0.95, consistency * 0.7 + sampleSizeBonus);
             
@@ -167,7 +171,7 @@ export class SupervisedLearningServiceImpl implements SupervisedLearningService 
             };
         } catch (error) {
             return {
-                prediction: `Error in prediction: ${error.message}`,
+                prediction: `Error in prediction: ${error instanceof Error ? error.message : String(error)}`,
                 confidence: 0
             };
         }
@@ -342,7 +346,11 @@ export class SupervisedLearningServiceImpl implements SupervisedLearningService 
         const mostCommon = this.getMostCommonOutcome(outcomeCounts);
         
         // Lower confidence for similar matches
-        const consistency = outcomeCounts.get(mostCommon) / outcomes.length;
+        const mostCommonCount = outcomeCounts.get(mostCommon);
+        if (!mostCommonCount) {
+            throw new Error('Unable to find count for most common outcome');
+        }
+        const consistency = mostCommonCount / outcomes.length;
         const confidence = Math.min(0.7, consistency * 0.5 + 0.1);
         
         return {
