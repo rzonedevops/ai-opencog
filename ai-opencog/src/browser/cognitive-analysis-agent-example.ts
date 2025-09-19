@@ -16,7 +16,7 @@
 
 import { inject, injectable } from '@theia/core/shared/inversify';
 import { Agent, LanguageModelRequirement, PromptVariantSet } from '@theia/ai-core';
-import { OpenCogService } from './opencog-service';
+import { OpenCogService } from '../common/opencog-service';
 
 /**
  * Example implementation of a cognitive analysis agent that demonstrates

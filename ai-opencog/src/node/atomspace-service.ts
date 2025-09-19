@@ -24,7 +24,6 @@ import {
     LearningData,
     PatternInput,
     PatternResult,
-    OpenCogService,
     LearningModel,
     AdaptationStrategy,
     UserBehaviorPattern,
@@ -51,6 +50,7 @@ import {
     OnlineLearningConfig,
     ActiveLearningConfig
 } from '../common';
+import { OpenCogService } from '../common/opencog-service';
 import { KnowledgeManagementServiceImpl } from './knowledge-management-service-impl';
 import { MultiModalProcessingService } from './multi-modal-processing-service';
 
