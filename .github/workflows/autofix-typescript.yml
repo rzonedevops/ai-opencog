@@ -1,6 +1,6 @@
 name: Auto-fix TypeScript Errors
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       branch:
@@ -121,64 +121,64 @@ jobs:
               cp create-stubs.js create-stubs.js.bak
               
               # Enhanced stub creation based on common patterns
-              cat >> create-stubs.js << 'EOF'
-
-// Auto-fix enhancements
-const enhancedStubs = {
-  'node_modules/@theia/core/lib/common/disposable.d.ts': `
-export interface Disposable {
-  dispose(): void;
-}
-export class DisposableCollection implements Disposable {
-  push(disposable: Disposable): Disposable;
-  pushAll(...disposables: Disposable[]): void;
-  dispose(): void;
-}
-`,
-  'node_modules/@theia/core/lib/browser/preferences/preference-service.d.ts': `
-export class PreferenceService {
-  set: any;
-  get: any;
-}
-export enum PreferenceScope {
-  User = "user",
-  Workspace = "workspace", 
-  Folder = "folder"
-}
-`,
-  'node_modules/@theia/task/lib/common/task-protocol.d.ts': `
-export interface TaskConfiguration {
-  label: string;
-  type: string;
-  [key: string]: any;
-}
-export enum TaskScope {
-  Workspace = "workspace",
-  Global = "global"
-}
-`,
-  'node_modules/@theia/debug/lib/common/debug-common.d.ts': `
-export interface DebugConfiguration {
-  type: string;
-  request: string;
-  name: string;
-  [key: string]: any;
-}
-export enum DebugSessionOptions {
-  workspace = "workspace",
-  user = "user",
-  folder = "folder"
-}
-`
-};
-
-// Apply enhanced stubs
-Object.entries(enhancedStubs).forEach(([filePath, content]) => {
-  fs.writeFileSync(filePath, content);
-});
-
-console.log('Enhanced stubs applied for auto-fix');
-EOF
+              {
+                echo ""
+                echo "// Auto-fix enhancements"
+                echo "const enhancedStubs = {"
+                echo "  'node_modules/@theia/core/lib/common/disposable.d.ts': \`"
+                echo "export interface Disposable {"
+                echo "  dispose(): void;"
+                echo "}"
+                echo "export class DisposableCollection implements Disposable {"
+                echo "  push(disposable: Disposable): Disposable;"
+                echo "  pushAll(...disposables: Disposable[]): void;"
+                echo "  dispose(): void;"
+                echo "}"
+                echo "\`,"
+                echo "  'node_modules/@theia/core/lib/browser/preferences/preference-service.d.ts': \`"
+                echo "export class PreferenceService {"
+                echo "  set: any;"
+                echo "  get: any;"
+                echo "}"
+                echo "export enum PreferenceScope {"
+                echo "  User = \"user\","
+                echo "  Workspace = \"workspace\","
+                echo "  Folder = \"folder\""
+                echo "}"
+                echo "\`,"
+                echo "  'node_modules/@theia/task/lib/common/task-protocol.d.ts': \`"
+                echo "export interface TaskConfiguration {"
+                echo "  label: string;"
+                echo "  type: string;"
+                echo "  [key: string]: any;"
+                echo "}"
+                echo "export enum TaskScope {"
+                echo "  Workspace = \"workspace\","
+                echo "  Global = \"global\""
+                echo "}"
+                echo "\`,"
+                echo "  'node_modules/@theia/debug/lib/common/debug-common.d.ts': \`"
+                echo "export interface DebugConfiguration {"
+                echo "  type: string;"
+                echo "  request: string;"
+                echo "  name: string;"
+                echo "  [key: string]: any;"
+                echo "}"
+                echo "export enum DebugSessionOptions {"
+                echo "  workspace = \"workspace\","
+                echo "  user = \"user\","
+                echo "  folder = \"folder\""
+                echo "}"
+                echo "\`"
+                echo "};"
+                echo ""
+                echo "// Apply enhanced stubs"
+                echo "Object.entries(enhancedStubs).forEach(([filePath, content]) => {"
+                echo "  fs.writeFileSync(filePath, content);"
+                echo "});"
+                echo ""
+                echo "console.log('Enhanced stubs applied for auto-fix');"
+              } >> create-stubs.js
               
               # Run enhanced stub creation
               node create-stubs.js
