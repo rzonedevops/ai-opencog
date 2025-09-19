@@ -116,8 +116,10 @@ export class DisposableCollection implements Disposable {
 export class EditorManager {
   onCreated: any;
   onCurrentEditorChanged: any;
+  onActiveEditorChanged: any;
   all: any[];
   open: any;
+  activeEditor: any;
 }
 `,
   'node_modules/@theia/navigator/lib/browser/navigator-contribution.d.ts': `
@@ -206,6 +208,7 @@ declare namespace monaco {
       title: string;
       kind?: string;
       edit?: any;
+      command?: any;
     }
   }
   class Range {
@@ -275,10 +278,45 @@ export class BaseWidget {
   node: HTMLElement;
   update(): void;
   focus(): void;
+  onActivateRequest(msg?: any): void;
+  dispose(): void;
 }
 export const codicon: any;
 export class Message {
   constructor(...args: any[]);
+}
+export class AbstractViewContribution<T> {
+  constructor(...args: any[]);
+  viewDidChange: any;
+}
+export class FrontendApplication {
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/core/lib/common/command.d.ts': `
+export interface CommandRegistry {
+  registerCommand(command: any): void;
+}
+export interface Command {
+  id: string;
+  label?: string;
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/core/lib/common/menu.d.ts': `
+export interface MenuModelRegistry {
+  registerMenuAction(menuPath: any, action: any): void;
+}
+export const MAIN_MENU_BAR: any;
+`,
+  'node_modules/@theia/core/lib/browser/widgets.d.ts': `
+export class Widget {
+  id: string;
+  title: any;
+  node: HTMLElement;
+}
+export interface WidgetManager {
+  getWidgets(name: string): any[];
 }
 `,
   'node_modules/@theia/core/lib/common/nls.d.ts': `
@@ -287,6 +325,19 @@ export function localize(key: string, defaultValue: string, ...args: any[]): str
 `,
   'node_modules/@theia/core/shared/react.d.ts': `
 export * from 'react';
+declare namespace React {
+  interface Component<P = {}, S = {}> {
+    render(): any;
+  }
+  interface ComponentClass<P = {}> {
+    new (props: P): Component<P, any>;
+  }
+  function createElement(type: any, props?: any, ...children: any[]): any;
+  function createRef<T>(): any;
+  const Fragment: any;
+  type ReactNode = any;
+  type KeyboardEvent<T = Element> = any;
+}
 `,
   'node_modules/@theia/core/lib/common/index.d.ts': `
 export interface CommandContribution {

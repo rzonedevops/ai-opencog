@@ -103,6 +103,8 @@ export interface LearningContext {
     currentTask?: string;
     request?: any;
     response?: any;
+    context?: any;
+    timestamp?: number;
     userExperience?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
     preferences?: Record<string, any>;
     environmentInfo?: Record<string, any>;
@@ -194,6 +196,7 @@ export type PatternType =
     | 'code' 
     | 'structural' 
     | 'behavioral' 
+    | 'usage'
     | 'syntax-pattern'
     | 'design-pattern'
     | 'async-pattern'
@@ -535,8 +538,11 @@ export type AdvancedLearningType =
     | 'meta_learning'
     | 'transfer_learning'
     | 'ensemble_learning'
+    | 'ensemble'
     | 'online_learning'
+    | 'online'
     | 'active_learning'
+    | 'active'
     | 'federated_learning'
     | 'continual_learning'
     | 'few_shot_learning';
@@ -690,6 +696,7 @@ export interface AdvancedLearningModel {
     id: string;
     type: AdvancedLearningType;
     algorithm?: string;
+    parameters?: any;
     config: any;
     state: any;
     version: number;
