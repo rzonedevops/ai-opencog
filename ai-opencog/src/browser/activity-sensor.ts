@@ -146,7 +146,9 @@ export class ActivitySensor implements Sensor, Disposable {
                         });
                     });
 
-                    this.disposables.push(cursorListener, selectionListener, changeListener);
+                    this.disposables.push(cursorListener);
+                    this.disposables.push(selectionListener);
+                    this.disposables.push(changeListener);
                 }
             })
         );

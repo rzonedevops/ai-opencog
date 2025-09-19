@@ -51,7 +51,11 @@
     "clean": "rm -rf lib",
     "compile": "tsc -p tsconfig.build.lenient.json || echo 'Build completed with warnings'",
     "compile:watch": "tsc --watch",
-    "lint": "echo 'Linting requires ESLint setup'",
+    "lint": "eslint src/**/*.ts --format=compact",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit --pretty",
+    "autofix": "npm run create-stubs && npm run lint:fix && npm run type-check",
+    "create-stubs": "node create-stubs.js",
     "test": "echo \"Tests require proper test setup\"",
     "package": "npm pack",
     "prepack": "npm run build",
@@ -75,7 +79,10 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "typescript": "~5.0.4",
-    "inversify": "^6.0.0"
+    "inversify": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0"
   },
   "peerDependencies": {
     "@theia/ai-chat": "1.64.1"
