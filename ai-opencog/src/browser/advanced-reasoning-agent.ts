@@ -17,7 +17,7 @@
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent } from '@theia/ai-core/lib/common/agent';
 import { WorkspaceService } from '@theia/workspace/lib/browser';
-import { MessageService } from '@theia/core';
+import { MessageService } from '@theia/core/lib/common/message-service';
 import { OpenCogService, KnowledgeManagementService } from '../common';
 import { 
     Atom, 

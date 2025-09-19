@@ -18,6 +18,7 @@ import { injectable, inject } from '@theia/core/shared/inversify';
 import { CompletionProvider, CompletionContext, Position } from '@theia/monaco-editor-core/esm/vs/editor/common/languages';
 import { ITextModel } from '@theia/monaco-editor-core/esm/vs/editor/common/model';
 import { CompletionList, CompletionItem, CompletionItemKind } from '@theia/monaco-editor-core/esm/vs/editor/common/languages';
+import * as monaco from '@theia/monaco-editor-core';
 import { OpenCogService } from '../common/opencog-service';
 import { ReasoningQuery, Atom } from '../common/opencog-types';
 
@@ -26,7 +27,7 @@ import { ReasoningQuery, Atom } from '../common/opencog-types';
  * as specified in Phase 2 requirements
  */
 @injectable()
-export class SemanticCompletionProvider implements CompletionProvider {
+export class SemanticCompletionProvider implements monaco.languages.CompletionItemProvider {
 
     constructor(
         @inject(OpenCogService) private opencog: OpenCogService
