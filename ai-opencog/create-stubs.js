@@ -41,7 +41,7 @@ const stubs = {
 export declare function injectable<T>(): (target: T) => T;
 export declare function inject(token: any): any;
 export declare function named(name: string): any;
-export declare function postConstruct(): any;
+export declare function postConstruct(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
 export declare class Container {
   get(token: any): any;
   bind(token: any): any;
@@ -108,7 +108,8 @@ export interface Disposable {
   dispose(): void;
 }
 export class DisposableCollection implements Disposable {
-  push(...disposables: Disposable[]): void;
+  pushAll(...disposables: Disposable[]): void;
+  push(disposable: Disposable): Disposable;
   dispose(): void;
 }
 `,
@@ -228,12 +229,21 @@ export class PreferenceService {
   set: any;
   get: any;
 }
+export enum PreferenceScope {
+  User = "user",
+  Workspace = "workspace", 
+  Folder = "folder"
+}
 `,
   'node_modules/@theia/task/lib/common/task-protocol.d.ts': `
 export interface TaskConfiguration {
   label: string;
   type: string;
   [key: string]: any;
+}
+export enum TaskScope {
+  Workspace = "workspace",
+  Global = "global"
 }
 `,
   'node_modules/@theia/debug/lib/common/debug-common.d.ts': `
@@ -242,6 +252,11 @@ export interface DebugConfiguration {
   request: string;
   name: string;
   [key: string]: any;
+}
+export enum DebugSessionOptions {
+  workspace = "workspace",
+  user = "user",
+  folder = "folder"
 }
 `,
   'node_modules/@theia/ai-core/index.d.ts': `
