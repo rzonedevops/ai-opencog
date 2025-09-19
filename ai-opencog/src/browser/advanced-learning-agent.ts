@@ -18,6 +18,7 @@ import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent } from '@theia/ai-core';
 import { OpenCogService } from '../common/opencog-service';
 import { AdvancedLearningService } from '../common/advanced-learning-service';
+import { FrontendAdvancedLearningService } from './frontend-advanced-learning-service';
 import {
     AdvancedLearningType,
     AdvancedLearningData,
@@ -66,7 +67,7 @@ export class AdvancedLearningAgent implements Agent {
 
     constructor(
         @inject(OpenCogService) private readonly openCogService: OpenCogService,
-        @inject(AdvancedLearningService) private readonly advancedLearningService: AdvancedLearningService
+        @inject(FrontendAdvancedLearningService) private readonly advancedLearningService: AdvancedLearningService
     ) {}
 
     /**

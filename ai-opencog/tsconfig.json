@@ -4,6 +4,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "lib": ["ES2019", "dom"],
+    "types": ["node"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
