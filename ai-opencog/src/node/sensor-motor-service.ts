@@ -160,7 +160,7 @@ export class BackendSensorMotorService {
                 queueLength: this.processingQueue.length,
                 performance: {
                     memory: process.memoryUsage().heapUsed / 1024 / 1024, // MB
-                    uptime: process.uptime()
+                    responseTime: Date.now() - (Date.now() - 1000) // Simple mock response time
                 }
             }
         };
@@ -197,8 +197,9 @@ export class BackendSensorMotorService {
         const reasoningQuery: ReasoningQuery = {
             type: 'deductive',
             premises: request.inputAtoms,
-            conclusion_pattern: {},
-            confidence_threshold: request.parameters?.confidenceThreshold || 0.5
+            parameters: {
+                confidenceThreshold: request.parameters?.confidenceThreshold || 0.5
+            }
         };
         
         const result = await this.opencog.reason(reasoningQuery);

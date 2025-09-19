@@ -172,14 +172,13 @@ export class CognitivePersonalization {
         if (profile.preferences.proactiveAssistance) {
             // Get context-aware suggestions from OpenCog
             const cognitiveRecommendations = await this.opencog.reason({
-                type: 'personalization_recommendations',
-                userId,
-                context: context || 'general',
-                preferences: profile.preferences
+                type: 'assistance-analysis',
+                context: { userId, preferences: profile.preferences, context: context || 'general' },
+                parameters: { analysisType: 'personalization_recommendations' }
             });
 
-            if (cognitiveRecommendations && cognitiveRecommendations.patterns) {
-                for (const pattern of cognitiveRecommendations.patterns) {
+            if (cognitiveRecommendations && cognitiveRecommendations.metadata?.patterns) {
+                for (const pattern of cognitiveRecommendations.metadata.patterns) {
                     recommendations.push({
                         type: 'cognitive',
                         description: pattern.description || 'Personalized suggestion',

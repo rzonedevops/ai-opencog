@@ -6,6 +6,7 @@
     "strict": false,
     "declaration": true,
     "declarationMap": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "lib": ["ES2020", "dom"]
   }
 }

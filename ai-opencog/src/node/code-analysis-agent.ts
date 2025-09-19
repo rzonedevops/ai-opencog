@@ -24,13 +24,18 @@ import { Atom, ReasoningQuery } from '../common/opencog-types';
  * Server-side OpenCog-powered code analysis agent as specified in Phase 2 requirements
  */
 @injectable()
-export class CodeAnalysisAgent extends Agent {
+export class CodeAnalysisAgent implements Agent {
+    public id: string;
+    public name: string;
+    public description: string;
 
     constructor(
         @inject(OpenCogService) private opencog: OpenCogService,
         @inject(WorkspaceService) private workspace: WorkspaceService
     ) {
-        super('opencog-code-analysis', 'OpenCog Code Analysis', 'Cognitive code analysis using OpenCog reasoning');
+        this.id = 'opencog-code-analysis';
+        this.name = 'OpenCog Code Analysis';
+        this.description = 'Cognitive code analysis using OpenCog reasoning';
     }
 
     async analyzeCode(fileUri: string): Promise<any> {

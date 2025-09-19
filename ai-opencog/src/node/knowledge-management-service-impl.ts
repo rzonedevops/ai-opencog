@@ -305,10 +305,10 @@ export class KnowledgeManagementServiceImpl implements KnowledgeManagementServic
         return Array.from(this.categories.values());
     }
 
-    async categorizeAtoms(graphId: string): Promise<Map<string, string[]>> {
+    async categorizeAtoms(graphId: string): Promise<Record<string, string[]>> {
         const graph = this.knowledgeGraphs.get(graphId);
         if (!graph) {
-            return new Map();
+            return {};
         }
 
         const atomCategories = new Map<string, string[]>();
@@ -330,7 +330,7 @@ export class KnowledgeManagementServiceImpl implements KnowledgeManagementServic
             }
         }
 
-        return atomCategories;
+        return Object.fromEntries(atomCategories);
     }
 
     async getAtomsByCategory(categoryId: string): Promise<Atom[]> {
@@ -338,7 +338,7 @@ export class KnowledgeManagementServiceImpl implements KnowledgeManagementServic
         
         for (const graph of this.knowledgeGraphs.values()) {
             const categorization = await this.categorizeAtoms(graph.id);
-            for (const [atomId, categories] of categorization) {
+            for (const [atomId, categories] of Object.entries(categorization)) {
                 if (categories.includes(categoryId)) {
                     const atom = graph.atoms.find(a => a.id === atomId);
                     if (atom) {
@@ -513,7 +513,7 @@ export class KnowledgeManagementServiceImpl implements KnowledgeManagementServic
         if (options.filterByCategory && options.filterByCategory.length > 0) {
             const categorization = await this.categorizeAtoms(graphId);
             exportData.graph.atoms = exportData.graph.atoms.filter((atom: Atom) => {
-                const atomCategories = categorization.get(atom.id!) || [];
+                const atomCategories = categorization[atom.id!] || [];
                 return atomCategories.some(cat => options.filterByCategory!.includes(cat));
             });
         }

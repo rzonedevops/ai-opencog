@@ -24,7 +24,6 @@ import {
     LearningData,
     PatternInput,
     PatternResult,
-    OpenCogService,
     LearningModel,
     AdaptationStrategy,
     UserBehaviorPattern,
@@ -51,6 +50,7 @@ import {
     OnlineLearningConfig,
     ActiveLearningConfig
 } from '../common';
+import { OpenCogService } from '../common/opencog-service';
 import { KnowledgeManagementServiceImpl } from './knowledge-management-service-impl';
 import { MultiModalProcessingService } from './multi-modal-processing-service';
 
@@ -1229,7 +1229,7 @@ export class AtomSpaceService implements OpenCogService {
     private async processPersonalizationLearning(data: LearningData): Promise<void> {
         // Process personalization learning
         if (data.context?.userId) {
-            await this.updatePersonalizationModel(data.context.userId, data.input);
+            await this.updateUserPersonalizationData(data.context.userId, data.input);
         }
     }
 
@@ -1413,7 +1413,7 @@ export class AtomSpaceService implements OpenCogService {
         this.learningModels.set(modelId, model);
     }
 
-    private async updatePersonalizationModel(userId: string, preferences: any): Promise<void> {
+    private async updateUserPersonalizationData(userId: string, preferences: any): Promise<void> {
         const existing = this.userPersonalization.get(userId) || {};
         const updated = { ...existing, ...preferences, lastUpdated: Date.now() };
         this.userPersonalization.set(userId, updated);
@@ -2288,9 +2288,9 @@ export class AtomSpaceService implements OpenCogService {
             algorithm: 'transfer_learning',
             parameters: {
                 sourceModel: config.sourceModel || 'pretrained_base',
-                targetDomain: config.targetDomain || 'default',
-                freezeFeatures: config.freezeFeatures !== false,
-                learningRate: config.learningRate || 0.001,
+                targetTask: config.targetTask || 'default',
+                transferStrategy: config.transferStrategy || 'fine_tuning',
+                frozenLayers: config.frozenLayers || [],
                 ...config
             },
             metrics: {
@@ -2299,8 +2299,8 @@ export class AtomSpaceService implements OpenCogService {
                 trainingTime: 0
             },
             status: 'initialized',
-            created: new Date().toISOString(),
-            lastUpdated: new Date().toISOString()
+            created: Date.now(),
+            lastUpdated: Date.now()
         };
 
         // Store in models map for SSR backend state management
@@ -2332,18 +2332,25 @@ export class AtomSpaceService implements OpenCogService {
         const accuracy = 0.7 + Math.random() * 0.25; // 70-95% accuracy range
         const loss = Math.random() * 0.3; // 0-30% loss
 
-        // Update model metrics
-        model.metrics = {
+        // Update model performance metrics
+        model.performance.trainingAccuracy = accuracy;
+        model.performance.convergenceMetrics = {
             accuracy,
             loss,
             trainingTime
         };
-        model.status = 'trained';
-        model.lastUpdated = new Date().toISOString();
+        model.metadata.status = 'trained';
+        model.lastUpdated = Date.now();
 
         return {
+            success: true,
             modelId,
-            type: 'transfer_learning',
+            algorithm: 'transfer_learning',
+            metrics: {
+                loss: 1 - accuracy,
+                accuracy: accuracy,
+                convergence: true
+            },
             predictions: targetData.map((data, index) => ({
                 input: data,
                 prediction: this.generateTransferPrediction(data),
@@ -2362,7 +2369,7 @@ export class AtomSpaceService implements OpenCogService {
             },
             metadata: {
                 targetDataSize: targetData.length,
-                transferStrategy: model.parameters.freezeFeatures ? 'feature_extraction' : 'fine_tuning',
+                transferStrategy: config.transferStrategy === 'feature_extraction' ? 'feature_extraction' : 'fine_tuning',
                 converged: true
             }
         };
@@ -2370,10 +2377,10 @@ export class AtomSpaceService implements OpenCogService {
 
     private generateTransferPrediction(data: AdvancedLearningData): any {
         // Generate mock transfer learning prediction based on data type
-        if (data.tensorData) {
+        if (data.input && (data.input as any).shape) {
             return {
                 class: Math.round(Math.random()),
-                features: Array(data.tensorData.shape[0] || 10).fill(0).map(() => Math.random()),
+                features: Array((data.input as any).shape[0] || 10).fill(0).map(() => Math.random()),
                 transferScore: 0.7 + Math.random() * 0.3
             };
         }
@@ -2383,6 +2390,13 @@ export class AtomSpaceService implements OpenCogService {
             category: Math.round(Math.random() * 5),
             transferConfidence: 0.8 + Math.random() * 0.2
         };
+    }
+
+    /**
+     * Generate a unique ID for atoms and models
+     */
+    private generateId(): string {
+        return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
     // Knowledge management service access
