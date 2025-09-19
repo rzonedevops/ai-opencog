@@ -27,8 +27,10 @@ import { KnowledgeGraph, KnowledgeDiscoveryQuery } from '../common/knowledge-man
  * Enhanced with knowledge management capabilities
  */
 @injectable()
-export class CodeAnalysisAgent extends Agent {
+export class CodeAnalysisAgent implements Agent {
 
+    id: string = 'code-analysis-agent';
+    name: string = 'Code Analysis Agent';
     private codeKnowledgeGraph: KnowledgeGraph | undefined;
 
     constructor(
@@ -36,7 +38,6 @@ export class CodeAnalysisAgent extends Agent {
         @inject(KnowledgeManagementService) private readonly knowledgeService: KnowledgeManagementService,
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService
     ) {
-        super('opencog-code-analysis', 'OpenCog Code Analysis Agent', 'Cognitive code analysis using OpenCog reasoning and knowledge management');
         this.initializeCodeKnowledge();
     }
 

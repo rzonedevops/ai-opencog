@@ -457,8 +457,9 @@ export class AdvancedLearningAgent implements Agent {
 
     private calculateResourceEfficiency(stats: any): number {
         // Simple efficiency metric: performance per unit memory
-        const totalPerformance = Object.values(stats.averagePerformance).reduce((sum: number, perf: any) => sum + perf, 0);
-        const avgPerformance = totalPerformance / Object.keys(stats.averagePerformance).length;
+        const totalPerformance = Object.values(stats.averagePerformance || {}).reduce((sum: number, perf: any) => sum + Number(perf || 0), 0);
+        const perfKeys = Object.keys(stats.averagePerformance || {});
+        const avgPerformance = perfKeys.length > 0 ? Number(totalPerformance) / Number(perfKeys.length) : 0;
         return stats.memoryUsage > 0 ? avgPerformance / (stats.memoryUsage / 1000000) : avgPerformance;
     }
 

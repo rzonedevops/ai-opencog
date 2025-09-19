@@ -18,6 +18,7 @@ const dirs = [
   'node_modules/@theia/debug/lib/browser',
   'node_modules/@theia/debug/lib/common',
   'node_modules/@theia/ai-chat/lib',
+  'node_modules/@theia/ai-chat/lib/common',
   'node_modules/@theia/ai-core',
   'node_modules/@theia/ai-core/lib',
   'node_modules/@theia/ai-core/lib/common',
@@ -25,7 +26,9 @@ const dirs = [
   'node_modules/@theia/core/lib/browser',
   'node_modules/@theia/core/lib/common',
   'node_modules/@theia/core',
-  'node_modules/@theia/monaco-editor-core'
+  'node_modules/@theia/monaco-editor-core',
+  'node_modules/react',
+  'node_modules/@types/react'
 ];
 
 dirs.forEach(dir => {
@@ -38,6 +41,7 @@ const stubs = {
 export declare function injectable<T>(): (target: T) => T;
 export declare function inject(token: any): any;
 export declare function named(name: string): any;
+export declare function postConstruct(): any;
 export declare class Container {
   get(token: any): any;
   bind(token: any): any;
@@ -58,6 +62,19 @@ export interface Agent {
   name: string;
 }
 `,
+  'node_modules/@theia/ai-chat/lib/common/chat-agents.d.ts': `
+export interface ChatAgent {
+  id: string;
+  name: string;
+  invoke: any;
+}
+`,
+  'node_modules/@theia/ai-core/lib/common/agent-service.d.ts': `
+export class AgentService {
+  getAgents(): any[];
+  registerAgent(agent: any): void;
+}
+`,
   'node_modules/@theia/workspace/lib/browser/index.d.ts': `
 export class WorkspaceService {
   workspace: any;
@@ -75,6 +92,16 @@ export class MessageService {
   warn(message: string): void;
   error(message: string): void;
 }
+export class Agent {
+  constructor(...args: any[]);
+  [key: string]: any;
+}
+export interface LanguageModelRequirement {
+  [key: string]: any;
+}
+export interface PromptVariantSet {
+  [key: string]: any;
+}
 `,
   'node_modules/@theia/core/lib/common/disposable.d.ts': `
 export interface Disposable {
@@ -89,8 +116,10 @@ export class DisposableCollection implements Disposable {
 export class EditorManager {
   onCreated: any;
   onCurrentEditorChanged: any;
+  onActiveEditorChanged: any;
   all: any[];
   open: any;
+  activeEditor: any;
 }
 `,
   'node_modules/@theia/navigator/lib/browser/navigator-contribution.d.ts': `
@@ -123,6 +152,7 @@ export class FileService {
   resolve: any;
   read: any;
   write: any;
+  onDidFilesChange: any;
 }
 `,
   'node_modules/@theia/monaco/lib/browser/monaco-editor.d.ts': `
@@ -130,6 +160,7 @@ export class MonacoEditor {
   onCursorPositionChanged: any;
   onSelectionChanged: any;
   onDocumentContentChanged: any;
+  onDispose: any;
   getControl: any;
 }
 `,
@@ -137,6 +168,11 @@ export class MonacoEditor {
 export class Workspace {
   readonly roots: any[];
   tryGetRoots(): any[];
+}
+export class WorkspaceService {
+  workspace: any;
+  roots: any[];
+  readFile(uri: any): Promise<string>;
 }
 `,
   'node_modules/@theia/core/lib/common/uri.d.ts': `
@@ -151,15 +187,38 @@ export default URI;
 declare namespace monaco {
   namespace editor {
     const createModel: any;
+    const setModelMarkers: any;
     interface ITextModel {
       [key: string]: any;
+    }
+    interface IMarkerData {
+      severity: any;
+      startLineNumber: number;
+      startColumn: number;
+      endLineNumber: number;
+      endColumn: number;
+      message: string;
     }
   }
   namespace languages {
     const registerCodeActionProvider: any;
+    const registerCompletionItemProvider: any;
+    const registerHoverProvider: any;
+    interface CodeAction {
+      title: string;
+      kind?: string;
+      edit?: any;
+      command?: any;
+    }
   }
   class Range {
     constructor(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number);
+  }
+  enum MarkerSeverity {
+    Error = 8,
+    Warning = 4,
+    Info = 2,
+    Hint = 1
   }
 }
 export = monaco;
@@ -188,8 +247,15 @@ export interface DebugConfiguration {
   'node_modules/@theia/ai-core/index.d.ts': `
 export declare class Agent {
   constructor(...args: any[]);
+  [key: string]: any;
 }
 export const Agent: any;
+export interface LanguageModelRequirement {
+  [key: string]: any;
+}
+export interface PromptVariantSet {
+  [key: string]: any;
+}
 `,
   'node_modules/@theia/core/lib/common/rpc-proxy.d.ts': `
 export interface RpcProxy<T> extends T {
@@ -206,6 +272,72 @@ export interface FrontendApplicationContribution {
 export interface WidgetFactory {
   createWidget(options?: any): any;
 }
+export class BaseWidget {
+  id: string;
+  title: any;
+  node: HTMLElement;
+  update(): void;
+  focus(): void;
+  onActivateRequest(msg?: any): void;
+  dispose(): void;
+}
+export const codicon: any;
+export class Message {
+  constructor(...args: any[]);
+}
+export class AbstractViewContribution<T> {
+  constructor(...args: any[]);
+  viewDidChange: any;
+}
+export class FrontendApplication {
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/core/lib/common/command.d.ts': `
+export interface CommandRegistry {
+  registerCommand(command: any): void;
+}
+export interface Command {
+  id: string;
+  label?: string;
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/core/lib/common/menu.d.ts': `
+export interface MenuModelRegistry {
+  registerMenuAction(menuPath: any, action: any): void;
+}
+export const MAIN_MENU_BAR: any;
+`,
+  'node_modules/@theia/core/lib/browser/widgets.d.ts': `
+export class Widget {
+  id: string;
+  title: any;
+  node: HTMLElement;
+}
+export interface WidgetManager {
+  getWidgets(name: string): any[];
+}
+`,
+  'node_modules/@theia/core/lib/common/nls.d.ts': `
+export const nls: any;
+export function localize(key: string, defaultValue: string, ...args: any[]): string;
+`,
+  'node_modules/@theia/core/shared/react.d.ts': `
+export * from 'react';
+declare namespace React {
+  interface Component<P = {}, S = {}> {
+    render(): any;
+  }
+  interface ComponentClass<P = {}> {
+    new (props: P): Component<P, any>;
+  }
+  function createElement(type: any, props?: any, ...children: any[]): any;
+  function createRef<T>(): any;
+  const Fragment: any;
+  type ReactNode = any;
+  type KeyboardEvent<T = Element> = any;
+}
 `,
   'node_modules/@theia/core/lib/common/index.d.ts': `
 export interface CommandContribution {
@@ -218,10 +350,19 @@ export interface MenuContribution {
   'node_modules/@theia/core/lib/common/logger.d.ts': `
 export interface ILogger {
   log(level: string, message: string, ...args: any[]): void;
+  info(message: string, ...args: any[]): void;
+  warn(message: string, ...args: any[]): void;
+  error(message: string, ...args: any[]): void;
+  debug(message: string, ...args: any[]): void;
 }
 export class Logger implements ILogger {
   log(level: string, message: string, ...args: any[]): void;
+  info(message: string, ...args: any[]): void;
+  warn(message: string, ...args: any[]): void;
+  error(message: string, ...args: any[]): void;
+  debug(message: string, ...args: any[]): void;
 }
+export const ILogger: symbol;
 `,
   'node_modules/@theia/core/lib/common/event.d.ts': `
 export class Emitter<T> {
@@ -233,6 +374,33 @@ export interface Event<T> {
   (listener: (e: T) => any): any;
 }
 `,
+  'node_modules/react/index.d.ts': `
+import * as React from 'react';
+export = React;
+export as namespace React;
+declare namespace React {
+  interface Component<P = {}, S = {}> {
+    render(): any;
+  }
+  interface ComponentClass<P = {}> {
+    new (props: P): Component<P, any>;
+  }
+  function createElement(type: any, props?: any, ...children: any[]): any;
+  const Fragment: any;
+}
+`,
+  'node_modules/@types/react/index.d.ts': `
+declare module 'react' {
+  interface Component<P = {}, S = {}> {
+    render(): any;
+  }
+  interface ComponentClass<P = {}> {
+    new (props: P): Component<P, any>;
+  }
+  function createElement(type: any, props?: any, ...children: any[]): any;
+  const Fragment: any;
+}
+`
 };
 
 Object.entries(stubs).forEach(([filePath, content]) => {

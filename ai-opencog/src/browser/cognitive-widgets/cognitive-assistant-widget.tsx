@@ -45,6 +45,7 @@ export interface AssistantContext {
     currentFile?: string;
     selectedText?: string;
     workspaceContext?: string;
+    projectContext?: any;
     recentActivity?: string[];
     userPreferences?: Record<string, any>;
 }
