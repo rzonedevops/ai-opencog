@@ -35,13 +35,84 @@ dirs.forEach(dir => {
   fs.mkdirSync(dir, { recursive: true });
 });
 
+// Ensure @types/node directory exists and create comprehensive Node.js types
+fs.mkdirSync('node_modules/@types/node', { recursive: true });
+fs.writeFileSync('node_modules/@types/node/index.d.ts', `
+declare var process: NodeJS.Process;
+declare var Buffer: BufferConstructor;
+declare var __dirname: string;
+declare var __filename: string;
+declare var require: NodeRequire;
+declare var module: NodeModule;
+declare var exports: any;
+declare var global: NodeJS.Global;
+declare var console: Console;
+
+declare namespace NodeJS {
+  interface Process {
+    platform: string;
+    env: ProcessEnv;
+    cwd(): string;
+    [key: string]: any;
+  }
+  interface ProcessEnv {
+    [key: string]: string | undefined;
+  }
+  interface Global {
+    [key: string]: any;
+  }
+  interface Timeout {
+    ref(): this;
+    unref(): this;
+  }
+  interface Timer extends Timeout {}
+  interface CpuUsage {
+    user: number;
+    system: number;
+  }
+}
+
+declare function setTimeout(callback: (...args: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout;
+declare function clearTimeout(timeoutId: NodeJS.Timeout): void;
+declare function setInterval(callback: (...args: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout;
+declare function clearInterval(intervalId: NodeJS.Timeout): void;
+
+interface NodeRequire {
+  (id: string): any;
+}
+
+interface NodeModule {
+  exports: any;
+}
+
+interface BufferConstructor {
+  from(str: string, encoding?: string): Buffer;
+  alloc(size: number): Buffer;
+}
+
+interface Buffer {
+  toString(encoding?: string): string;
+  length: number;
+}
+
+declare module "crypto" {
+  export function randomBytes(size: number): Buffer;
+  export function createHash(algorithm: string): any;
+  export function createHmac(algorithm: string, key: string): any;
+}
+`);
+
+dirs.forEach(dir => {
+  fs.mkdirSync(dir, { recursive: true });
+});
+
 // Create comprehensive stub files
 const stubs = {
   'node_modules/@theia/core/shared/inversify.d.ts': `
 export declare function injectable<T>(): (target: T) => T;
 export declare function inject(token: any): any;
 export declare function named(name: string): any;
-export declare function postConstruct(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
+export declare function postConstruct(): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
 export declare class Container {
   get(token: any): any;
   bind(token: any): any;
@@ -111,6 +182,42 @@ export class DisposableCollection implements Disposable {
   pushAll(...disposables: Disposable[]): void;
   push(disposable: Disposable): Disposable;
   dispose(): void;
+}
+`,
+  'node_modules/@theia/core/lib/browser/widgets.d.ts': `
+export const codicon: any;
+export class BaseWidget {
+  onActivateRequest(): void;
+}
+export class Widget {
+  id: string;
+  title: any;
+  node: HTMLElement;
+}
+export interface WidgetManager {
+  getWidgets(name: string): any[];
+  getWidget(name: string): any;
+  activateWidget(name: string): Promise<any>;
+}
+`,
+  'node_modules/@theia/core/lib/common/command.d.ts': `
+export interface Command {
+  id: string;
+  category?: string;
+  label?: string;
+}
+export interface CommandHandler {
+  execute?(...args: any[]): any;
+  isEnabled?(...args: any[]): boolean;
+  isVisible?(...args: any[]): boolean;
+}
+export class CommandRegistry {
+  registerCommand(command: Command, handler?: CommandHandler): any;
+  registerHandler(id: string, handler: CommandHandler): any;
+}
+export namespace Command {
+  export function toLocalizedCommand(command: Command, key?: string): Command;
+  export function toDefaultLocalizedCommand(command: Command): Command;
 }
 `,
   'node_modules/@theia/editor/lib/browser/editor-manager.d.ts': `
@@ -287,13 +394,17 @@ export interface FrontendApplicationContribution {
 export interface WidgetFactory {
   createWidget(options?: any): any;
 }
+export class PreferenceService {
+  set(key: string, value: any): Promise<void>;
+  get(key: string): any;
+}
 export class BaseWidget {
   id: string;
   title: any;
   node: HTMLElement;
   update(): void;
   focus(): void;
-  onActivateRequest(msg?: any): void;
+  protected onActivateRequest(msg?: any): void;
   dispose(): void;
 }
 export const codicon: any;
@@ -324,35 +435,36 @@ export interface MenuModelRegistry {
 }
 export const MAIN_MENU_BAR: any;
 `,
-  'node_modules/@theia/core/lib/browser/widgets.d.ts': `
-export class Widget {
-  id: string;
-  title: any;
-  node: HTMLElement;
-}
-export interface WidgetManager {
-  getWidgets(name: string): any[];
-}
-`,
+
   'node_modules/@theia/core/lib/common/nls.d.ts': `
 export const nls: any;
 export function localize(key: string, defaultValue: string, ...args: any[]): string;
 `,
   'node_modules/@theia/core/shared/react.d.ts': `
 export * from 'react';
-declare namespace React {
+import * as React from 'react';
+export = React;
+
+export namespace React {
+  type ReactNode = any;
+  type KeyboardEvent<T = Element> = any;
   interface Component<P = {}, S = {}> {
     render(): any;
   }
   interface ComponentClass<P = {}> {
     new (props: P): Component<P, any>;
   }
+  interface RefObject<T> {
+    readonly current: T | null;
+  }
   function createElement(type: any, props?: any, ...children: any[]): any;
-  function createRef<T>(): any;
+  function createRef<T>(): RefObject<T>;
   const Fragment: any;
-  type ReactNode = any;
-  type KeyboardEvent<T = Element> = any;
 }
+
+export function createRef<T>(): React.RefObject<T>;
+export const Fragment: any;
+export function createElement(type: any, props?: any, ...children: any[]): any;
 `,
   'node_modules/@theia/core/lib/common/index.d.ts': `
 export interface CommandContribution {
@@ -360,6 +472,14 @@ export interface CommandContribution {
 }
 export interface MenuContribution {
   registerMenus(menus: any): void;
+}
+export class Emitter<T> {
+  readonly event: Event<T>;
+  fire(event: T): void;
+  dispose(): void;
+}
+export interface Event<T> {
+  (listener: (e: T) => any): any;
 }
 `,
   'node_modules/@theia/core/lib/common/logger.d.ts': `
@@ -394,25 +514,39 @@ import * as React from 'react';
 export = React;
 export as namespace React;
 declare namespace React {
+  type ReactNode = any;
+  type KeyboardEvent<T = any> = any;
+  type SyntheticEvent = any;
   interface Component<P = {}, S = {}> {
     render(): any;
   }
   interface ComponentClass<P = {}> {
     new (props: P): Component<P, any>;
   }
+  interface RefObject<T> {
+    readonly current: T | null;
+  }
   function createElement(type: any, props?: any, ...children: any[]): any;
+  function createRef<T>(): RefObject<T>;
   const Fragment: any;
 }
 `,
   'node_modules/@types/react/index.d.ts': `
 declare module 'react' {
+  type ReactNode = any;
+  type KeyboardEvent<T = any> = any;
+  type SyntheticEvent = any;
   interface Component<P = {}, S = {}> {
     render(): any;
   }
   interface ComponentClass<P = {}> {
     new (props: P): Component<P, any>;
   }
+  interface RefObject<T> {
+    readonly current: T | null;
+  }
   function createElement(type: any, props?: any, ...children: any[]): any;
+  function createRef<T>(): RefObject<T>;
   const Fragment: any;
 }
 `
