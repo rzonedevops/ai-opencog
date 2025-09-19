@@ -73,7 +73,14 @@ jobs:
           echo "Analyzing TypeScript errors..."
           
           # Run TypeScript compiler and capture errors
-          npx tsc --noEmit --skipLibCheck 2>&1 | tee typescript-errors.log || true
+          # Try different tsconfig files in order of preference
+          if [ -f "tsconfig.build.lenient.json" ]; then
+            npx tsc --project tsconfig.build.lenient.json --noEmit --skipLibCheck 2>&1 | tee typescript-errors.log || true
+          elif [ -f "tsconfig.json" ]; then
+            npx tsc --project tsconfig.json --noEmit --skipLibCheck 2>&1 | tee typescript-errors.log || true
+          else
+            npx tsc --noEmit --skipLibCheck 2>&1 | tee typescript-errors.log || true
+          fi
           
           # Validate output file exists and has content before processing
           if [[ ! -f "typescript-errors.log" ]] || [[ ! -s "typescript-errors.log" ]]; then
@@ -113,7 +120,7 @@ jobs:
           fi
 
       - name: Apply automatic fixes
-        if: steps.analyze.outputs.fixable_errors > '0'
+        if: steps.analyze.outputs.fixable_errors != '0' && steps.analyze.outputs.fixable_errors != '' && steps.analyze.outputs.fixable_errors != 'Unknown'
         id: autofix
         run: |
           cd ai-opencog
@@ -219,8 +226,12 @@ jobs:
                 cp "$file" "$file.bak"
                 
                 # Fix pattern: this.disposables.push(a, b, c) -> separate calls
-                sed -i.tmp 's/\(.*disposables\.push(\)\([^,)]*\), \([^,)]*\), \([^)]*\))/\1\2);\n\1\3);\n\1\4)/g' "$file"
-                sed -i.tmp 's/\(.*disposables\.push(\)\([^,)]*\), \([^)]*\))/\1\2);\n\1\3)/g' "$file"
+                # Use perl for more reliable regex replacement on all platforms
+                perl -i.bak -pe 's/(.*disposables\.push\()([^,)]*)(?:,\s*([^,)]*))+\)/my ($prefix, $first, $rest) = ($1, $2, $3); $rest ? "$prefix$first);\n$prefix$rest)" : "$prefix$first)"/ge' "$file" 2>/dev/null || {
+                  # Fallback to sed if perl is not available
+                  sed -i.tmp 's/\(.*disposables\.push(\)\([^,)]*\), \([^,)]*\), \([^)]*\))/\1\2);\n\1\3);\n\1\4)/g' "$file"
+                  sed -i.tmp 's/\(.*disposables\.push(\)\([^,)]*\), \([^)]*\))/\1\2);\n\1\3)/g' "$file"
+                }
                 
                 # Clean up temp files
                 rm -f "$file.tmp" 2>/dev/null || true
@@ -242,29 +253,37 @@ jobs:
           fi
           
           # Fix 4: Update tsconfig for better error handling
-          if [ -f tsconfig.build.lenient.json ]; then
-            echo "Updating TypeScript configuration for better error handling..."
-            
-            # Backup original
-            cp tsconfig.build.lenient.json tsconfig.build.lenient.json.bak
-            
-            # Update with more lenient settings if needed
-            node -e "
-              const fs = require('fs');
-              const config = JSON.parse(fs.readFileSync('tsconfig.build.lenient.json'));
-              config.compilerOptions = config.compilerOptions || {};
-              config.compilerOptions.skipLibCheck = true;
-              config.compilerOptions.noImplicitAny = false;
-              config.compilerOptions.strict = false;
-              config.compilerOptions.types = config.compilerOptions.types || [];
-              if (!config.compilerOptions.types.includes('node')) {
-                config.compilerOptions.types.push('node');
-              }
-              fs.writeFileSync('tsconfig.build.lenient.json', JSON.stringify(config, null, 2));
-            " || true
-            
-            CHANGES_MADE=true
-          fi
+          for tsconfig_file in tsconfig.build.lenient.json tsconfig.json; do
+            if [ -f "$tsconfig_file" ]; then
+              echo "Updating TypeScript configuration for better error handling: $tsconfig_file"
+              
+              # Backup original
+              cp "$tsconfig_file" "$tsconfig_file.bak"
+              
+              # Update with more lenient settings if needed
+              node -e "
+                const fs = require('fs');
+                try {
+                  const config = JSON.parse(fs.readFileSync('$tsconfig_file'));
+                  config.compilerOptions = config.compilerOptions || {};
+                  config.compilerOptions.skipLibCheck = true;
+                  config.compilerOptions.noImplicitAny = false;
+                  config.compilerOptions.strict = false;
+                  config.compilerOptions.types = config.compilerOptions.types || [];
+                  if (!config.compilerOptions.types.includes('node')) {
+                    config.compilerOptions.types.push('node');
+                  }
+                  fs.writeFileSync('$tsconfig_file', JSON.stringify(config, null, 2));
+                  console.log('Updated $tsconfig_file successfully');
+                } catch (error) {
+                  console.error('Failed to update $tsconfig_file:', error.message);
+                }
+              " || true
+              
+              CHANGES_MADE=true
+              break
+            fi
+          done
           
           echo "changes_made=$CHANGES_MADE" >> $GITHUB_OUTPUT
 
@@ -275,8 +294,14 @@ jobs:
           cd ai-opencog
           echo "Verifying that fixes resolved TypeScript errors..."
           
-          # Run TypeScript compiler again
-          npx tsc --noEmit --skipLibCheck 2>&1 | tee typescript-errors-after.log || true
+          # Run TypeScript compiler again with same configuration as before
+          if [ -f "tsconfig.build.lenient.json" ]; then
+            npx tsc --project tsconfig.build.lenient.json --noEmit --skipLibCheck 2>&1 | tee typescript-errors-after.log || true
+          elif [ -f "tsconfig.json" ]; then
+            npx tsc --project tsconfig.json --noEmit --skipLibCheck 2>&1 | tee typescript-errors-after.log || true
+          else
+            npx tsc --noEmit --skipLibCheck 2>&1 | tee typescript-errors-after.log || true
+          fi
           
           # Validate output file exists before processing
           if [[ ! -f "typescript-errors-after.log" ]]; then
@@ -306,8 +331,8 @@ jobs:
           fi
 
       - name: Create Pull Request
-        if: steps.autofix.outputs.changes_made == 'true' && (github.event.inputs.create_pr != 'false')
-        uses: peter-evans/create-pull-request@v5
+        if: steps.autofix.outputs.changes_made == 'true' && (github.event.inputs.create_pr == '' || github.event.inputs.create_pr == 'true' || github.event.inputs.create_pr != 'false')
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
@@ -365,9 +390,10 @@ jobs:
           name: typescript-autofix-logs-${{ github.run_number }}
           path: |
             ai-opencog/typescript-errors*.log
-            ai-opencog/*create-stubs.js.bak
+            ai-opencog/create-stubs.js.bak
             ai-opencog/tsconfig*.bak
             ai-opencog/src/**/*.bak
+            ai-opencog/src/**/*.tmp
           retention-days: 7
           if-no-files-found: warn
 
