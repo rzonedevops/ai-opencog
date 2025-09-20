@@ -24,7 +24,7 @@ import { PatternInput, PatternResult, Atom } from '../common/opencog-types';
  * behavioral pattern analysis, and project evolution tracking
  */
 @injectable()
-export class PatternRecognitionAgent extends Agent {
+export class PatternRecognitionAgent implements Agent {
 
     constructor(
         @inject(OpenCogService) private readonly opencog: OpenCogService

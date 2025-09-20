@@ -66,7 +66,7 @@ export interface SolutionMetrics {
  * - Quality-driven solution evaluation
  */
 @injectable()
-export class SpecializedProblemSolvingAgent extends Agent {
+export class SpecializedProblemSolvingAgent implements Agent {
 
     private problemSolvingStrategies: Map<string, ProblemSolvingStrategy> = new Map();
     private solutionHistory: Map<string, ReasoningSolution[]> = new Map();

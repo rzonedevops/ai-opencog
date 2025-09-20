@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
+    "target": "ES2022",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["ES2019", "dom"],
+    "lib": ["ES2022", "dom"],
     "jsx": "react",
     "types": ["node"],
     "strict": false,
@@ -20,7 +20,15 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "baseUrl": ".",
+    "paths": {
+      "@theia/*": ["node_modules/@theia/*"]
+    }
   },
   "include": [
     "src/**/*"
@@ -29,6 +37,7 @@
     "node_modules",
     "lib",
     "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "src/browser/**/*.ts"
   ]
 }

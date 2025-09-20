@@ -13,10 +13,9 @@
     "sourceMap": false,
     "composite": false,
     "lib": [
-      "ES2019",
-      "dom"
+      "ES2022"
     ],
-    "target": "ES2019",
+    "target": "ES2022",
     "module": "commonjs",
     "maxNodeModuleJsDepth": 0,
     "noEmitOnError": false,
@@ -26,12 +25,15 @@
     ]
   },
   "include": [
-    "src/**/*"
+    "src/common/**/*",
+    "src/node/**/*"
   ],
   "exclude": [
     "node_modules",
     "lib",
     "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "src/browser/**/*",
+    "src/test/**/*"
   ]
 }

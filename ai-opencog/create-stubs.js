@@ -131,12 +131,19 @@ export class RpcConnectionHandler extends ConnectionHandler {
 export interface Agent {
   id: string;
   name: string;
+  description?: string;
 }
 `,
   'node_modules/@theia/ai-chat/lib/common/chat-agents.d.ts': `
 export interface ChatAgent {
   id: string;
   name: string;
+  invoke: any;
+}
+export abstract class AbstractStreamParsingChatAgent implements ChatAgent {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
   invoke: any;
 }
 `,
@@ -162,10 +169,6 @@ export class MessageService {
   info(message: string): void;
   warn(message: string): void;
   error(message: string): void;
-}
-export class Agent {
-  constructor(...args: any[]);
-  [key: string]: any;
 }
 export interface LanguageModelRequirement {
   [key: string]: any;

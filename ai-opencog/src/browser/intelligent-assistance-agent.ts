@@ -68,7 +68,7 @@ export interface AssistanceResponse {
  * - Adaptive assistance based on user expertise level
  */
 @injectable()
-export class IntelligentAssistanceAgent extends Agent {
+export class IntelligentAssistanceAgent implements Agent {
 
     private assistanceHistory: Map<string, AssistanceResponse[]> = new Map();
     private userExpertiseProfile: Map<string, any> = new Map();
@@ -81,6 +81,10 @@ export class IntelligentAssistanceAgent extends Agent {
         @inject(EditorManager) private readonly editorManager: EditorManager,
         @inject(MessageService) private readonly messageService: MessageService
     ) {
+        // Initialize agent properties
+        this.id = 'intelligent-assistance';
+        this.name = 'Intelligent Assistance Agent';
+        this.description = 'Provides context-aware intelligent assistance with cognitive reasoning';
         super(
             'intelligent-assistance-agent',
             'Intelligent Development Assistant',

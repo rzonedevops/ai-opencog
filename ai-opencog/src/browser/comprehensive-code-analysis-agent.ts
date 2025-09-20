@@ -42,7 +42,7 @@ import { KnowledgeGraph, KnowledgeDiscoveryQuery } from '../common/knowledge-man
  * - Collaborative team insights and knowledge sharing
  */
 @injectable()
-export class ComprehensiveCodeAnalysisAgent extends Agent {
+export class ComprehensiveCodeAnalysisAgent implements Agent {
 
     private collaborativeKnowledgeGraph: KnowledgeGraph | undefined;
     private userBehaviorPatterns: Map<string, UserBehaviorPattern> = new Map();
