@@ -103,8 +103,13 @@ jobs:
           MISSING_ARGS=$(grep -c "Expected .* arguments, but got .*" typescript-errors.log || echo "0")
           MISSING_MODULES=$(grep -c "Cannot find module" typescript-errors.log || echo "0")
           
-          # Safe arithmetic with validated numbers
-          FIXABLE_ERRORS=$((${MISSING_EXPORTS:-0} + ${DISPOSABLE_PUSH:-0} + ${MISSING_ARGS:-0} + ${MISSING_MODULES:-0}))
+          # Safe arithmetic with validated numbers - ensure all variables are numeric
+          MISSING_EXPORTS=$(echo "${MISSING_EXPORTS:-0}" | grep -E '^[0-9]+$' || echo "0")
+          DISPOSABLE_PUSH=$(echo "${DISPOSABLE_PUSH:-0}" | grep -E '^[0-9]+$' || echo "0")
+          MISSING_ARGS=$(echo "${MISSING_ARGS:-0}" | grep -E '^[0-9]+$' || echo "0")
+          MISSING_MODULES=$(echo "${MISSING_MODULES:-0}" | grep -E '^[0-9]+$' || echo "0")
+          
+          FIXABLE_ERRORS=$((MISSING_EXPORTS + DISPOSABLE_PUSH + MISSING_ARGS + MISSING_MODULES))
           
           echo "fixable_errors=$FIXABLE_ERRORS" >> $GITHUB_OUTPUT
           echo "missing_exports=$MISSING_EXPORTS" >> $GITHUB_OUTPUT
@@ -128,18 +133,18 @@ jobs:
           
           CHANGES_MADE=false
           
-          # Set safe defaults for all numeric variables
+          # Set safe defaults for all numeric variables with validation
           MISSING_EXPORTS="${{ steps.analyze.outputs.missing_exports }}"
           MISSING_MODULES="${{ steps.analyze.outputs.missing_modules }}"
           DISPOSABLE_PUSH="${{ steps.analyze.outputs.disposable_push }}"
           
-          # Ensure variables are numeric with safe defaults
-          MISSING_EXPORTS="${MISSING_EXPORTS:-0}"
-          MISSING_MODULES="${MISSING_MODULES:-0}"
-          DISPOSABLE_PUSH="${DISPOSABLE_PUSH:-0}"
+          # Ensure variables are numeric with safe defaults and validation
+          MISSING_EXPORTS=$(echo "${MISSING_EXPORTS:-0}" | grep -E '^[0-9]+$' || echo "0")
+          MISSING_MODULES=$(echo "${MISSING_MODULES:-0}" | grep -E '^[0-9]+$' || echo "0")
+          DISPOSABLE_PUSH=$(echo "${DISPOSABLE_PUSH:-0}" | grep -E '^[0-9]+$' || echo "0")
           
           # Fix 1: Update stub files for missing exports
-          if [[ "${MISSING_EXPORTS:-0}" -gt 0 ]] || [[ "${MISSING_MODULES:-0}" -gt 0 ]]; then
+          if [[ "$MISSING_EXPORTS" -gt 0 ]] || [[ "$MISSING_MODULES" -gt 0 ]]; then
             echo "Updating stub files for missing exports/modules..."
             
             # Enhance create-stubs.js if it exists
@@ -214,7 +219,7 @@ jobs:
           fi
           
           # Fix 2: Fix DisposableCollection.push() usage patterns
-          if [[ "${DISPOSABLE_PUSH:-0}" -gt 0 ]]; then
+          if [[ "$DISPOSABLE_PUSH" -gt 0 ]]; then
             echo "Fixing DisposableCollection.push() usage patterns..."
             
             # Find files with multiple argument push calls and fix them
@@ -309,13 +314,13 @@ jobs:
             touch typescript-errors-after.log
           fi
           
-          # Count remaining errors with safe defaults
+          # Count remaining errors with safe defaults and validation
           ERROR_COUNT_AFTER=$(grep -c "error TS" typescript-errors-after.log || echo "0")
           ERROR_COUNT_BEFORE="${{ steps.analyze.outputs.error_count }}"
           
-          # Ensure variables are numeric with safe defaults
-          ERROR_COUNT_BEFORE="${ERROR_COUNT_BEFORE:-0}"
-          ERROR_COUNT_AFTER="${ERROR_COUNT_AFTER:-0}"
+          # Ensure variables are numeric with safe defaults and validation
+          ERROR_COUNT_BEFORE=$(echo "${ERROR_COUNT_BEFORE:-0}" | grep -E '^[0-9]+$' || echo "0")
+          ERROR_COUNT_AFTER=$(echo "${ERROR_COUNT_AFTER:-0}" | grep -E '^[0-9]+$' || echo "0")
           
           echo "TypeScript errors before: $ERROR_COUNT_BEFORE"
           echo "TypeScript errors after: $ERROR_COUNT_AFTER"
@@ -402,17 +407,17 @@ jobs:
         run: |
           cd ai-opencog
           
-          # Sanitize output data for GitHub Actions
+          # Sanitize output data for GitHub Actions with proper validation
           ERROR_COUNT="${{ steps.analyze.outputs.error_count }}"
           FIXABLE_ERRORS="${{ steps.analyze.outputs.fixable_errors }}"
           ERRORS_FIXED="${{ steps.verify.outputs.errors_fixed }}"
           CHANGES_MADE="${{ steps.autofix.outputs.changes_made }}"
           VERIFICATION_SUCCESS="${{ steps.verify.outputs.verification_success }}"
           
-          # Set safe defaults
-          ERROR_COUNT="${ERROR_COUNT:-Unknown}"
-          FIXABLE_ERRORS="${FIXABLE_ERRORS:-Unknown}"
-          ERRORS_FIXED="${ERRORS_FIXED:-Unknown}"
+          # Set safe defaults with validation
+          ERROR_COUNT=$(echo "${ERROR_COUNT:-0}" | grep -E '^[0-9]+$' || echo "Unknown")
+          FIXABLE_ERRORS=$(echo "${FIXABLE_ERRORS:-0}" | grep -E '^[0-9]+$' || echo "Unknown")
+          ERRORS_FIXED=$(echo "${ERRORS_FIXED:-0}" | grep -E '^[0-9]+$' || echo "Unknown")
           CHANGES_MADE="${CHANGES_MADE:-false}"
           VERIFICATION_SUCCESS="${VERIFICATION_SUCCESS:-N/A}"
           
@@ -430,7 +435,7 @@ jobs:
           if [[ "$CHANGES_MADE" == "true" ]]; then
             echo "### ✅ Auto-fixes Applied" >> $GITHUB_STEP_SUMMARY
             echo "The workflow successfully applied automatic fixes for TypeScript errors." >> $GITHUB_STEP_SUMMARY
-            if [[ "${{ github.event.inputs.create_pr }}" != "false" ]]; then
+            if [[ "${{ github.event.inputs.create_pr || 'true' }}" != "false" ]]; then
               echo "A pull request has been created with the fixes." >> $GITHUB_STEP_SUMMARY
             fi
           else
