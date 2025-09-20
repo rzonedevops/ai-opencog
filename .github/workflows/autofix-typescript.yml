@@ -89,8 +89,10 @@ jobs:
             echo "No TypeScript errors found or compilation failed to generate output." > typescript-errors.log
           fi
           
-          # Count errors with safe default
-          ERROR_COUNT=$(grep -c "error TS" typescript-errors.log || echo "0")
+          # Count errors with safe default and validation
+          ERROR_COUNT=$(grep -c "error TS" typescript-errors.log 2>/dev/null || echo "0")
+          # Ensure ERROR_COUNT is a valid number
+          ERROR_COUNT=$(echo "$ERROR_COUNT" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
           echo "Found $ERROR_COUNT TypeScript errors"
           echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
           
