@@ -104,10 +104,10 @@ jobs:
           MISSING_MODULES=$(grep -c "Cannot find module" typescript-errors.log || echo "0")
           
           # Safe arithmetic with validated numbers - ensure all variables are numeric
-          MISSING_EXPORTS=$(echo "${MISSING_EXPORTS:-0}" | grep -E '^[0-9]+$' || echo "0")
-          DISPOSABLE_PUSH=$(echo "${DISPOSABLE_PUSH:-0}" | grep -E '^[0-9]+$' || echo "0")
-          MISSING_ARGS=$(echo "${MISSING_ARGS:-0}" | grep -E '^[0-9]+$' || echo "0")
-          MISSING_MODULES=$(echo "${MISSING_MODULES:-0}" | grep -E '^[0-9]+$' || echo "0")
+          MISSING_EXPORTS=$(echo "${MISSING_EXPORTS:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
+          DISPOSABLE_PUSH=$(echo "${DISPOSABLE_PUSH:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
+          MISSING_ARGS=$(echo "${MISSING_ARGS:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
+          MISSING_MODULES=$(echo "${MISSING_MODULES:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
           
           FIXABLE_ERRORS=$((MISSING_EXPORTS + DISPOSABLE_PUSH + MISSING_ARGS + MISSING_MODULES))
           
@@ -139,9 +139,9 @@ jobs:
           DISPOSABLE_PUSH="${{ steps.analyze.outputs.disposable_push }}"
           
           # Ensure variables are numeric with safe defaults and validation
-          MISSING_EXPORTS=$(echo "${MISSING_EXPORTS:-0}" | grep -E '^[0-9]+$' || echo "0")
-          MISSING_MODULES=$(echo "${MISSING_MODULES:-0}" | grep -E '^[0-9]+$' || echo "0")
-          DISPOSABLE_PUSH=$(echo "${DISPOSABLE_PUSH:-0}" | grep -E '^[0-9]+$' || echo "0")
+          MISSING_EXPORTS=$(echo "${MISSING_EXPORTS:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
+          MISSING_MODULES=$(echo "${MISSING_MODULES:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
+          DISPOSABLE_PUSH=$(echo "${DISPOSABLE_PUSH:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
           
           # Fix 1: Update stub files for missing exports
           if [[ "$MISSING_EXPORTS" -gt 0 ]] || [[ "$MISSING_MODULES" -gt 0 ]]; then
@@ -319,8 +319,8 @@ jobs:
           ERROR_COUNT_BEFORE="${{ steps.analyze.outputs.error_count }}"
           
           # Ensure variables are numeric with safe defaults and validation
-          ERROR_COUNT_BEFORE=$(echo "${ERROR_COUNT_BEFORE:-0}" | grep -E '^[0-9]+$' || echo "0")
-          ERROR_COUNT_AFTER=$(echo "${ERROR_COUNT_AFTER:-0}" | grep -E '^[0-9]+$' || echo "0")
+          ERROR_COUNT_BEFORE=$(echo "${ERROR_COUNT_BEFORE:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
+          ERROR_COUNT_AFTER=$(echo "${ERROR_COUNT_AFTER:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "0")
           
           echo "TypeScript errors before: $ERROR_COUNT_BEFORE"
           echo "TypeScript errors after: $ERROR_COUNT_AFTER"
@@ -415,9 +415,9 @@ jobs:
           VERIFICATION_SUCCESS="${{ steps.verify.outputs.verification_success }}"
           
           # Set safe defaults with validation
-          ERROR_COUNT=$(echo "${ERROR_COUNT:-0}" | grep -E '^[0-9]+$' || echo "Unknown")
-          FIXABLE_ERRORS=$(echo "${FIXABLE_ERRORS:-0}" | grep -E '^[0-9]+$' || echo "Unknown")
-          ERRORS_FIXED=$(echo "${ERRORS_FIXED:-0}" | grep -E '^[0-9]+$' || echo "Unknown")
+          ERROR_COUNT=$(echo "${ERROR_COUNT:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "Unknown")
+          FIXABLE_ERRORS=$(echo "${FIXABLE_ERRORS:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "Unknown")
+          ERRORS_FIXED=$(echo "${ERRORS_FIXED:-0}" | tr -d '\n' | grep -E '^[0-9]+$' || echo "Unknown")
           CHANGES_MADE="${CHANGES_MADE:-false}"
           VERIFICATION_SUCCESS="${VERIFICATION_SUCCESS:-N/A}"
           
