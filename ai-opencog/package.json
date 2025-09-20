@@ -6,11 +6,11 @@
     "@theia/ai-chat": "1.64.1",
     "@theia/ai-core": "1.64.1",
     "@theia/core": "1.64.1",
-    "@theia/workspace": "1.64.1",
     "@theia/editor": "1.64.1",
     "@theia/filesystem": "1.64.1",
     "@theia/monaco": "1.64.1",
     "@theia/variable-resolver": "1.64.1",
+    "@theia/workspace": "1.64.1",
     "tslib": "^2.6.2"
   },
   "main": "lib/common",
@@ -77,12 +77,12 @@
     "postversion": "git push && git push --tags"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
-    "typescript": "~5.0.4",
-    "inversify": "^6.0.0",
+    "@types/node": "^18.19.127",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.0.0"
+    "eslint": "^8.0.0",
+    "inversify": "^6.0.0",
+    "typescript": "~5.0.4"
   },
   "peerDependencies": {
     "@theia/ai-chat": "1.64.1"

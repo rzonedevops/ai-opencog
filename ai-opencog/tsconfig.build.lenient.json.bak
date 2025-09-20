@@ -12,18 +12,12 @@
     "declarationMap": false,
     "sourceMap": false,
     "composite": false,
-    "lib": [
-      "ES2019",
-      "dom"
-    ],
+    "lib": ["ES2019", "dom"],
     "target": "ES2019",
     "module": "commonjs",
     "maxNodeModuleJsDepth": 0,
     "noEmitOnError": false,
-    "emitDeclarationOnly": false,
-    "types": [
-      "node"
-    ]
+    "emitDeclarationOnly": false
   },
   "include": [
     "src/**/*"
