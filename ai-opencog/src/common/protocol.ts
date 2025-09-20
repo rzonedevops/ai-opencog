@@ -14,7 +14,11 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { RpcServer } from '@theia/core/lib/common/messaging/proxy-factory';
+// RpcServer type stub for backend compilation
+export interface RpcServer<T> {
+    setClient(client: T): void;
+    getClient(): T | undefined;
+}
 import {
     Atom,
     AtomPattern,

@@ -24,7 +24,6 @@
     "noImplicitReturns": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "suppressImplicitAnyIndexErrors": true,
     "baseUrl": ".",
     "paths": {
       "@theia/*": ["node_modules/@theia/*"]

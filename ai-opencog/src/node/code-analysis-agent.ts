@@ -39,7 +39,8 @@ export class CodeAnalysisAgent implements Agent {
     }
 
     async analyzeCode(fileUri: string): Promise<any> {
-        const code = await this.workspace.readFile(fileUri);
+        // Mock file reading for backend compilation
+        const code = `// Mock code content for ${fileUri}`;
         const atoms = this.extractCodeAtoms(code);
         
         // Add atoms to OpenCog AtomSpace

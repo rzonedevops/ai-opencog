@@ -702,6 +702,10 @@ export interface AdvancedLearningModel {
     version: number;
     created: number;
     lastUpdated: number;
+    accuracy?: number;
+    trainingTime?: number;
+    metrics?: any;
+    status?: string;
     performance: {
         trainingAccuracy: number;
         validationAccuracy: number;

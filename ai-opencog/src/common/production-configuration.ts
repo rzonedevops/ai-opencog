@@ -126,7 +126,7 @@ export class ProductionConfigurationService {
      */
     async getEnvironment(): Promise<'development' | 'staging' | 'production'> {
         const env = process.env.NODE_ENV || 
-                   await this.preferenceService.get('ai-opencog.environment', 'development');
+                   await this.preferenceService.get('ai-opencog.environment');
         return env as 'development' | 'staging' | 'production';
     }
 

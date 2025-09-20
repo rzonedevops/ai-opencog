@@ -28,6 +28,7 @@ export interface FeedbackData {
     sentiment?: 'positive' | 'negative' | 'neutral';
     tags?: string[];
     details?: string;
+    helpful?: boolean; // Required for UserFeedback compatibility
     metadata?: Record<string, any>;
 }
 
@@ -42,7 +43,7 @@ export interface FeedbackAnalysis {
         change: number;
     }>;
     insights: Array<{
-        type: 'improvement' | 'warning' | 'success';
+        type: 'improvement' | 'warning' | 'success' | 'performance' | 'cognitive';
         description: string;
         confidence: number;
         action?: string;
@@ -135,10 +136,15 @@ export class FeedbackIntegration {
 
         // Learn from feedback in OpenCog
         await this.opencog.learn({
-            type: 'user_feedback',
-            feedbackId,
-            userId: feedback.userId,
-            data: feedbackData
+            type: 'behavioral',
+            input: {
+                feedbackId,
+                userId: feedback.userId,
+                data: feedbackData
+            },
+            context: {
+                userId: feedback.userId
+            }
         });
 
         // Update personalization based on feedback
@@ -196,11 +202,16 @@ export class FeedbackIntegration {
 
         // Learn from implicit feedback
         await this.opencog.learn({
-            type: 'implicit_feedback',
-            feedbackId,
-            userId: interaction.userId,
-            data: feedbackData,
-            behavior: interaction.behavior
+            type: 'behavioral',
+            input: {
+                feedbackId,
+                userId: interaction.userId,
+                data: feedbackData,
+                behavior: interaction.behavior
+            },
+            context: {
+                userId: interaction.userId
+            }
         });
 
         return feedbackId;
@@ -321,11 +332,16 @@ export class FeedbackIntegration {
 
         // Store learning in OpenCog
         await this.opencog.learn({
-            type: 'interaction_learning',
-            userId,
-            learningPoints,
-            adaptations,
-            timestamp: Date.now()
+            type: 'behavioral',
+            input: {
+                userId,
+                learningPoints,
+                adaptations,
+                timestamp: Date.now()
+            },
+            context: {
+                userId
+            }
         });
 
         return { learningPoints, adaptations };
@@ -555,10 +571,15 @@ export class FeedbackIntegration {
         if (feedback.rating && feedback.rating <= 2) {
             // Low rating - immediate attention needed
             await this.opencog.learn({
-                type: 'urgent_feedback',
-                userId,
-                feedback,
-                priority: 'high'
+                type: 'reinforcement',
+                input: {
+                    userId,
+                    feedback,
+                    priority: 'high'
+                },
+                context: {
+                    userId
+                }
             });
         }
     }

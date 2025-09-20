@@ -2129,57 +2129,10 @@ export class AtomSpaceService implements OpenCogService {
                 adaptationEfficiency: adaptationBonus / shots
             },
             modelState: { adapted: true, shots },
-            nextActions: ['evaluate_on_query_set', 'fine_tune_if_needed']
+            nextActions: ['evaluate_on_query_set', 'fine_tune_if_needed', 'update_model']
         };
     }
 
-    /**
-     * Get advanced learning statistics
-     */
-    async getAdvancedLearningStats(): Promise<{
-        totalAdvancedModels: number;
-        modelTypeDistribution: Record<AdvancedLearningType, number>;
-        averageAccuracy: Record<AdvancedLearningType, number>;
-        totalTrainingTime: number;
-        memoryUsage: number;
-    }> {
-        // Query AtomSpace for advanced learning models
-        const modelAtoms = await this.queryAtoms({ type: 'ConceptNode', name: 'AdvancedTraining_*' });
-        
-        const typeDistribution: Record<string, number> = {};
-        const accuracySum: Record<string, number> = {};
-        let totalTrainingTime = 0;
-        let totalMemoryUsage = 0;
-        
-        for (const atom of modelAtoms) {
-            const algorithm = atom.metadata?.algorithm;
-            const performance = atom.metadata?.performance;
-            
-            if (algorithm) {
-                typeDistribution[algorithm] = (typeDistribution[algorithm] || 0) + 1;
-                if (performance?.accuracy) {
-                    accuracySum[algorithm] = (accuracySum[algorithm] || 0) + performance.accuracy;
-                }
-                if (performance?.trainingTime) {
-                    totalTrainingTime += performance.trainingTime;
-                }
-            }
-        }
-        
-        // Calculate averages
-        const averageAccuracy: Record<string, number> = {};
-        for (const type in accuracySum) {
-            averageAccuracy[type] = accuracySum[type] / typeDistribution[type];
-        }
-        
-        return {
-            totalAdvancedModels: modelAtoms.length,
-            modelTypeDistribution: typeDistribution as Record<AdvancedLearningType, number>,
-            averageAccuracy: averageAccuracy as Record<AdvancedLearningType, number>,
-            totalTrainingTime,
-            memoryUsage: totalMemoryUsage
-        };
-    }
 
     // Helper methods for advanced learning
     
@@ -2293,6 +2246,9 @@ export class AtomSpaceService implements OpenCogService {
                 frozenLayers: config.frozenLayers || [],
                 ...config
             },
+            config: config,
+            state: { initialized: true },
+            version: 1,
             metrics: {
                 accuracy: 0,
                 loss: 0,
@@ -2300,7 +2256,19 @@ export class AtomSpaceService implements OpenCogService {
             },
             status: 'initialized',
             created: Date.now(),
-            lastUpdated: Date.now()
+            lastUpdated: Date.now(),
+            performance: {
+                trainingAccuracy: 0,
+                validationAccuracy: 0,
+                convergenceMetrics: {}
+            },
+            capabilities: ['transfer_learning', 'fine_tuning'],
+            metadata: {
+                datasetSize: 0,
+                epochs: 0,
+                parameters: 0,
+                memoryUsage: 1024
+            }
         };
 
         // Store in models map for SSR backend state management
@@ -2613,6 +2581,66 @@ export class AtomSpaceService implements OpenCogService {
                 trainingTime: 50,
                 convergence: false
             }
+        };
+    }
+
+    // Missing methods from OpenCogService interface
+    async getAdvancedLearningModel(modelId: string): Promise<AdvancedLearningModel | undefined> {
+        return this.advancedLearningModels.get(modelId);
+    }
+
+    async listAdvancedLearningModels(type?: AdvancedLearningType): Promise<AdvancedLearningModel[]> {
+        const models = Array.from(this.advancedLearningModels.values());
+        if (type) {
+            return models.filter(model => model.type === type);
+        }
+        return models;
+    }
+
+    async deleteAdvancedLearningModel(modelId: string): Promise<boolean> {
+        return this.advancedLearningModels.delete(modelId);
+    }
+
+    async getAdvancedLearningStats(): Promise<{
+        totalAdvancedModels: number;
+        modelTypeDistribution: Record<AdvancedLearningType, number>;
+        averageAccuracy: Record<AdvancedLearningType, number>;
+        totalTrainingTime: number;
+        memoryUsage: number;
+    }> {
+        const models = Array.from(this.advancedLearningModels.values());
+        const typeDistribution: Record<string, number> = {};
+        const accuracyByType: Record<string, number[]> = {};
+        let totalTrainingTime = 0;
+
+        models.forEach(model => {
+            const type = model.type;
+            typeDistribution[type] = (typeDistribution[type] || 0) + 1;
+            
+            if (!accuracyByType[type]) {
+                accuracyByType[type] = [];
+            }
+            if (model.accuracy) {
+                accuracyByType[type].push(model.accuracy);
+            }
+            
+            totalTrainingTime += model.trainingTime || 0;
+        });
+
+        const averageAccuracy: Record<string, number> = {};
+        Object.keys(accuracyByType).forEach(type => {
+            const accuracies = accuracyByType[type];
+            averageAccuracy[type] = accuracies.length > 0 
+                ? accuracies.reduce((sum, acc) => sum + acc, 0) / accuracies.length 
+                : 0;
+        });
+
+        return {
+            totalAdvancedModels: models.length,
+            modelTypeDistribution: typeDistribution as Record<AdvancedLearningType, number>,
+            averageAccuracy: averageAccuracy as Record<AdvancedLearningType, number>,
+            totalTrainingTime,
+            memoryUsage: models.length * 1024 // Estimated memory usage
         };
     }
 }
