@@ -184,13 +184,13 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
             options: {
                 maxResults: 10,
                 minConfidence: 0.5,
-                patternTypes: ['code-quality', 'security-issue', 'performance-issue']
+                patternTypes: ['code', 'structural', 'behavioral']
             }
         });
 
         // Quick reasoning on identified patterns
         const reasoning = await this.openCogService.reason({
-            type: 'quick-analysis',
+            type: 'code-analysis',
             atoms: patterns.map(p => p.pattern),
             context: { uri, mode: 'realtime' }
         });
@@ -368,13 +368,13 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
             context: { fileUri, analysisType: 'semantic' },
             scope: 'comprehensive',
             options: {
-                patternTypes: ['semantic-structure', 'naming-pattern', 'abstraction-level'],
+                patternTypes: ['structural', 'behavioral', 'code'],
                 maxResults: 25
             }
         });
 
         const reasoning = await this.openCogService.reason({
-            type: 'semantic-analysis',
+            type: 'code-analysis',
             atoms: patterns.map(p => p.pattern),
             context: { fileUri, depth: 'comprehensive' }
         });
@@ -394,13 +394,13 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
             context: { fileUri, analysisType: 'architectural' },
             scope: 'comprehensive',
             options: {
-                patternTypes: ['architecture-pattern', 'dependency-pattern', 'layer-separation'],
+                patternTypes: ['structural', 'design-pattern', 'behavioral'],
                 maxResults: 20
             }
         });
 
         const reasoning = await this.openCogService.reason({
-            type: 'architectural-analysis',
+            type: 'code-analysis',
             atoms: patterns.map(p => p.pattern),
             context: { fileUri, analysisDepth: 'comprehensive' }
         });

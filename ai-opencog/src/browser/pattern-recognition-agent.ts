@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Agent } from '@theia/ai-core/lib/common/agent';
+import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
 import { OpenCogService } from '../common/opencog-service';
 import { PatternInput, PatternResult, Atom } from '../common/opencog-types';
 
@@ -25,11 +25,18 @@ import { PatternInput, PatternResult, Atom } from '../common/opencog-types';
  */
 @injectable()
 export class PatternRecognitionAgent implements Agent {
+    readonly id = 'pattern-recognition';
+    readonly name = 'Pattern Recognition Agent';
+    readonly description = 'Detects code patterns, behaviors, and project evolution';
+    readonly variables: any[] = [];
+    readonly prompts: any[] = [];
+    readonly languageModelRequirements: LanguageModelRequirement[] = [];
+    readonly agentSpecificVariables: any[] = [];
+    readonly functions: any[] = [];
 
     constructor(
         @inject(OpenCogService) private readonly opencog: OpenCogService
     ) {
-        super('pattern-recognition', 'Pattern Recognition Agent', 'Detects code patterns, behaviors, and project evolution');
     }
 
     /**
