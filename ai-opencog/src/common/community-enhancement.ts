@@ -55,15 +55,14 @@ export interface ReleaseInfo {
 @injectable()
 export class CommunityEnhancementService {
 
-    @inject(FeedbackIntegration)
-    protected readonly feedbackService: FeedbackIntegration;
-
-    @inject(ProductionMonitoringService)
-    protected readonly monitoringService: ProductionMonitoringService;
-
     private enhancements = new Map<string, EnhancementRequest>();
     private contributions = new Map<string, CommunityContribution>();
     private releases: ReleaseInfo[] = [];
+
+    constructor(
+        @inject(FeedbackIntegration) protected readonly feedbackService: FeedbackIntegration,
+        @inject(ProductionMonitoringService) protected readonly monitoringService: ProductionMonitoringService
+    ) {}
 
     /**
      * Submit an enhancement request

@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { injectable, inject, named } from '@theia/core/shared/inversify';
+import { injectable, inject } from '@theia/core/shared/inversify';
 import { ILogger } from '@theia/core/lib/common/logger';
 import { Emitter, Event } from '@theia/core/lib/common/event';
 import {
@@ -51,14 +51,26 @@ import { ReasoningQuery, ReasoningResult } from '../common/opencog-types';
 @injectable()
 export class DistributedReasoningServiceImpl implements DistributedReasoningService {
 
-    @inject(ILogger) @named('distributed-reasoning')
-    protected readonly logger: ILogger;
-
     private config: DistributedReasoningConfig;
     private nodeRegistry: Map<string, ReasoningNode> = new Map();
     private taskQueue: Map<string, DistributedReasoningTask> = new Map();
     private completedTasks: Map<string, DistributedReasoningResult> = new Map();
     private heartbeatTimers: Map<string, NodeJS.Timeout> = new Map();
+
+    constructor(
+        @inject(ILogger) protected readonly logger: ILogger
+    ) {
+        this.config = {
+            maxNodes: 10,
+            taskTimeout: 300000,
+            heartbeatInterval: 30000,
+            loadBalancingStrategy: 'round-robin',
+            aggregationStrategy: 'weighted-average',
+            enableFaultTolerance: true,
+            retryAttempts: 3,
+            minConfidenceScore: 0.7
+        };
+    }
     
     // Event emitters
     private readonly onNodeRegisteredEmitter = new Emitter<{ node: ReasoningNode }>();

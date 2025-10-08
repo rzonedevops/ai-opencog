@@ -18,8 +18,7 @@ import { inject, injectable } from '@theia/core/shared/inversify';
 import { BaseWidget, codicon, Message } from '@theia/core/lib/browser';
 import { nls } from '@theia/core/lib/common/nls';
 import { Disposable, DisposableCollection } from '@theia/core/lib/common/disposable';
-import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
-import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
+import { EditorManager } from '@theia/editor/lib/browser';
 import { IntelligentAssistanceAgent } from '../intelligent-assistance-agent';
 import { OpenCogService } from '../../common/opencog-service';
 import * as React from '@theia/core/shared/react';
@@ -391,7 +390,7 @@ export class CognitiveAssistantWidget extends BaseWidget {
     private setupRealTimeContextUpdates(): void {
         // Listen for active editor changes to update context in real-time
         this.toDispose.push(
-            this.editorManager.onActiveEditorChanged(() => {
+            this.editorManager.onCurrentEditorChanged(() => {
                 this.updateCurrentContext();
             })
         );
@@ -401,23 +400,20 @@ export class CognitiveAssistantWidget extends BaseWidget {
     }
 
     private updateCurrentContext(): void {
-        const activeEditor = this.editorManager.activeEditor;
-        if (activeEditor instanceof MonacoEditor) {
-            const model = activeEditor.getControl().getModel();
-            if (model) {
-                this.context = {
-                    ...this.context,
-                    currentFile: model.uri.path,
-                    projectContext: {
-                        language: model.getLanguageId(),
-                        framework: this.detectFramework(model.uri.path),
-                        dependencies: [] // Could be enhanced to detect actual dependencies
-                    }
-                };
-                
-                // Update the widget display to reflect the new context
-                this.update();
-            }
+        const activeEditor = this.editorManager.currentEditor;
+        if (activeEditor && activeEditor.editor) {
+            this.context = {
+                ...this.context,
+                currentFile: activeEditor.editor.uri.path,
+                projectContext: {
+                    language: activeEditor.editor.document.languageId,
+                    framework: this.detectFramework(activeEditor.editor.uri.path),
+                    dependencies: [] // Could be enhanced to detect actual dependencies
+                }
+            };
+            
+            // Update the widget display to reflect the new context
+            this.update();
         } else {
             // No active editor, clear file context
             this.context = {

@@ -171,7 +171,7 @@ export class IntelligentRefactoringProvider {
             id: `quality-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             type: pattern.pattern.type || 'quality-issue',
             severity: this.getSeverityForPattern(pattern),
-            message: pattern.explanation || `${pattern.pattern.type}: ${pattern.pattern.name}`,
+            message: pattern.pattern.description || `${pattern.pattern.type}: ${pattern.pattern.name}`,
             line: range.startLineNumber,
             range,
             suggestions
@@ -254,8 +254,10 @@ export class IntelligentRefactoringProvider {
                 for (const lineNumber of lineNumbers) {
                     issues.push({
                         id: `duplicate-${lineNumber}`,
+                        type: 'duplicate-code',
                         severity: 'info',
                         message: 'Duplicate code detected',
+                        line: lineNumber + 1,
                         range: new Range(lineNumber + 1, 1, lineNumber + 1, lines[lineNumber].length + 1),
                         suggestions: [{
                             id: `extract-common-${lineNumber}`,

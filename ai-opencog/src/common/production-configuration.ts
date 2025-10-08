@@ -48,8 +48,9 @@ export interface EnvironmentSettings {
 @injectable()
 export class ProductionConfigurationService {
 
-    @inject(PreferenceService)
-    protected readonly preferenceService: PreferenceService;
+    constructor(
+        @inject(PreferenceService) protected readonly preferenceService: PreferenceService
+    ) {}
 
     private readonly defaultConfig: ProductionConfig = {
         environment: 'development',

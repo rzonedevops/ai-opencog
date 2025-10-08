@@ -88,17 +88,16 @@ export interface ContinuousImprovement {
 @injectable()
 export class FeedbackIntegration {
     
-    @inject(OpenCogService)
-    protected readonly opencog: OpenCogService;
-
-    @inject(CognitivePersonalization)
-    protected readonly personalization: CognitivePersonalization;
-
     private feedbackHistory: Map<string, FeedbackData[]> = new Map();
     private learningObjectives: Map<string, LearningObjective> = new Map();
     private activeExperiments: Map<string, any> = new Map();
     private improvements: any[] = [];
     private nextFeedbackId = 1;
+
+    constructor(
+        @inject(OpenCogService) protected readonly opencog: OpenCogService,
+        @inject(CognitivePersonalization) protected readonly personalization: CognitivePersonalization
+    ) {}
 
     /**
      * Collect explicit user feedback
