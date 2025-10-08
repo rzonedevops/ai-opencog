@@ -8,5 +8,14 @@
     "declarationMap": false,
     "sourceMap": false,
     "lib": ["ES2020", "dom"]
-  }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { BaseWidget, codicon, Message } from '@theia/core/lib/browser';
 import { nls } from '@theia/core/lib/common/nls';
 import { Disposable, DisposableCollection } from '@theia/core/lib/common/disposable';
@@ -57,20 +57,19 @@ export class LearningProgressWidget extends BaseWidget {
     static readonly ID = 'cognitive.learning-progress';
     static readonly LABEL = nls.localize('theia/ai/cognitive/learningProgress', 'Learning Progress');
 
-    @inject(UserBehaviorLearningAgent)
-    protected readonly userBehaviorAgent: UserBehaviorLearningAgent;
-
-    @inject(LearningAgent)
-    protected readonly learningAgent: LearningAgent;
-
-    @inject(OpenCogService)
-    protected readonly openCogService: OpenCogService;
-
     protected readonly toDispose = new DisposableCollection();
     protected data: LearningProgressData | undefined;
     private updateInterval: NodeJS.Timeout | undefined;
 
-    @postConstruct()
+    constructor(
+        @inject(UserBehaviorLearningAgent) protected readonly userBehaviorAgent: UserBehaviorLearningAgent,
+        @inject(LearningAgent) protected readonly learningAgent: LearningAgent,
+        @inject(OpenCogService) protected readonly openCogService: OpenCogService
+    ) {
+        super();
+        this.init();
+    }
+
     protected init(): void {
         this.id = LearningProgressWidget.ID;
         this.title.label = LearningProgressWidget.LABEL;

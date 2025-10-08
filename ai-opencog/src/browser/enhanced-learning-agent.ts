@@ -16,7 +16,7 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser';
+import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
 import { OpenCogService } from '../common/opencog-service';
 import { LearningData, UserFeedback, LearningContext, UserBehaviorPattern, AdaptationStrategy } from '../common/opencog-types';
 

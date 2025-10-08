@@ -28,13 +28,10 @@ export class ProductionMonitoringWidget extends ReactWidget {
     static readonly ID = PRODUCTION_MONITORING_WIDGET_ID;
     static readonly LABEL = 'Production Monitoring';
 
-    @inject(ProductionOptimizationService)
-    protected readonly productionService: ProductionOptimizationService;
-
-    @inject(MessageService)
-    protected readonly messageService: MessageService;
-
-    constructor() {
+    constructor(
+        @inject(ProductionOptimizationService) protected readonly productionService: ProductionOptimizationService,
+        @inject(MessageService) protected readonly messageService: MessageService
+    ) {
         super();
         this.id = PRODUCTION_MONITORING_WIDGET_ID;
         this.title.label = 'Production Monitoring';

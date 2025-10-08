@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { BaseWidget, codicon, Message } from '@theia/core/lib/browser';
 import { nls } from '@theia/core/lib/common/nls';
 import { Disposable, DisposableCollection } from '@theia/core/lib/common/disposable';
@@ -55,12 +55,6 @@ export class KnowledgeExplorerWidget extends BaseWidget {
     static readonly ID = 'cognitive.knowledge-explorer';
     static readonly LABEL = nls.localize('theia/ai/cognitive/knowledgeExplorer', 'Knowledge Explorer');
 
-    @inject(KnowledgeManagementService)
-    protected readonly knowledgeService: KnowledgeManagementService;
-
-    @inject(OpenCogService)
-    protected readonly openCogService: OpenCogService;
-
     protected readonly toDispose = new DisposableCollection();
     protected knowledgeGraph: KnowledgeGraph | undefined;
     protected selectedNode: KnowledgeNode | undefined;
@@ -68,7 +62,14 @@ export class KnowledgeExplorerWidget extends BaseWidget {
     protected queryResults: QueryResult[] = [];
     protected viewMode: 'graph' | 'list' | 'search' = 'graph';
 
-    @postConstruct()
+    constructor(
+        @inject(KnowledgeManagementService) protected readonly knowledgeService: KnowledgeManagementService,
+        @inject(OpenCogService) protected readonly openCogService: OpenCogService
+    ) {
+        super();
+        this.init();
+    }
+
     protected init(): void {
         this.id = KnowledgeExplorerWidget.ID;
         this.title.label = KnowledgeExplorerWidget.LABEL;

@@ -14,9 +14,9 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { injectable, inject, postConstruct } from '@theia/core/shared/inversify';
+import { injectable, inject } from '@theia/core/shared/inversify';
 import { ReactWidget } from '@theia/core/lib/browser/widgets/react-widget';
-import { DisposableCollection } from '@theia/core';
+import { DisposableCollection } from '@theia/core/lib/common/disposable';
 import { OpenCogService } from '../../common';
 import * as React from '@theia/core/shared/react';
 import {
@@ -43,10 +43,13 @@ export class MultiModalCognitiveWidget extends ReactWidget {
 
     protected readonly toDispose = new DisposableCollection();
 
-    @inject(OpenCogService)
-    protected readonly openCogService: OpenCogService;
+    constructor(
+        @inject(OpenCogService) protected readonly openCogService: OpenCogService
+    ) {
+        super();
+        this.init();
+    }
 
-    @postConstruct()
     protected init(): void {
         this.id = MultiModalCognitiveWidget.ID;
         this.title.label = MultiModalCognitiveWidget.LABEL;
