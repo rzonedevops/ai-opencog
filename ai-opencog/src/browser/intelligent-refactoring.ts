@@ -98,7 +98,7 @@ export class IntelligentRefactoringProvider {
 
         // Use OpenCog reasoning to identify opportunities
         const reasoningQuery: ReasoningQuery = {
-            type: 'refactoring-analysis',
+            type: 'code-analysis',
             context: {
                 code,
                 fileUri: model.uri.toString(),
@@ -142,16 +142,16 @@ export class IntelligentRefactoringProvider {
 
             // Learn from successful refactoring
             await this.opencog.learn({
-                type: 'refactoring-success',
-                data: {
+                type: 'supervised',
+                input: {
                     suggestionId: suggestion.id,
                     category: suggestion.category,
                     confidence: suggestion.confidence
                 },
                 context: {
-                    fileUri: model.uri.toString(),
-                    timestamp: Date.now()
-                }
+                    currentTask: model.uri.toString()
+                },
+                timestamp: Date.now()
             });
 
             return true;
@@ -169,8 +169,10 @@ export class IntelligentRefactoringProvider {
 
         return {
             id: `quality-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: pattern.pattern.type || 'quality-issue',
             severity: this.getSeverityForPattern(pattern),
             message: pattern.explanation || `${pattern.pattern.type}: ${pattern.pattern.name}`,
+            line: range.startLineNumber,
             range,
             suggestions
         };
@@ -187,8 +189,10 @@ export class IntelligentRefactoringProvider {
             if (line.length > 120) {
                 issues.push({
                     id: `long-line-${i}`,
+                    type: 'line-length',
                     severity: 'warning',
                     message: 'Line is too long, consider breaking it up',
+                    line: i + 1,
                     range: new Range(i + 1, 1, i + 1, line.length + 1),
                     suggestions: [{
                         id: `break-line-${i}`,
@@ -207,8 +211,10 @@ export class IntelligentRefactoringProvider {
             if (indentLevel > 24) { // 6 levels of 4-space indentation
                 issues.push({
                     id: `deep-nesting-${i}`,
+                    type: 'deep-nesting',
                     severity: 'warning',
                     message: 'Deep nesting detected, consider extracting methods',
+                    line: i + 1,
                     range: new Range(i + 1, 1, i + 1, line.length + 1),
                     suggestions: [{
                         id: `extract-method-${i}`,

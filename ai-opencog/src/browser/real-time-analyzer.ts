@@ -147,7 +147,7 @@ export class RealTimeCodeAnalyzer implements Disposable {
         
         // Use OpenCog reasoning for additional insights
         const reasoningResult = await this.opencog.reason({
-            type: 'performance-analysis',
+            type: 'code-analysis',
             context: {
                 code,
                 fileUri: uri,
@@ -157,8 +157,9 @@ export class RealTimeCodeAnalyzer implements Disposable {
         });
         
         // Convert reasoning results to optimizations
-        if (reasoningResult.conclusions) {
-            for (const conclusion of reasoningResult.conclusions) {
+        if (reasoningResult.conclusion) {
+            const conclusions = Array.isArray(reasoningResult.conclusion) ? reasoningResult.conclusion : [reasoningResult.conclusion];
+            for (const conclusion of conclusions) {
                 if (conclusion.type === 'performance-optimization') {
                     optimizations.push({
                         id: `opencog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

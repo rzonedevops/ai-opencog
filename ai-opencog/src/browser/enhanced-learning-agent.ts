@@ -16,7 +16,7 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser';
+import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
 import { OpenCogService } from '../common/opencog-service';
 import { LearningData, UserFeedback, LearningContext, UserBehaviorPattern, AdaptationStrategy } from '../common/opencog-types';
 
@@ -98,8 +98,8 @@ export class LearningAgent implements Agent {
 
     readonly prompts = [
         {
-            id: 'learning-analysis-prompt',
-            content: `Analyze learning data and provide insights:
+            defaultVariant: 'learning-analysis-prompt',
+            'learning-analysis-prompt': `Analyze learning data and provide insights:
             
 Developer Profile: {{developerProfile}}
 Code Quality Metrics: {{codeQuality}}
@@ -144,7 +144,7 @@ Provide actionable recommendations for improvement based on the learning data.`
 
         // Learn from the behavior data
         const learningData: LearningData = {
-            type: 'developer-behavior',
+            type: 'behavioral',
             data: {
                 userId,
                 action,
@@ -153,7 +153,7 @@ Provide actionable recommendations for improvement based on the learning data.`
             },
             context: {
                 workspaceId: this.workspace.workspace?.resource.toString(),
-                sessionId: context.sessionId || 'unknown'
+                currentTask: context.sessionId || 'unknown'
             }
         };
 
@@ -182,8 +182,8 @@ Provide actionable recommendations for improvement based on the learning data.`
 
         // Store in OpenCog for reasoning
         const learningData: LearningData = {
-            type: 'code-quality-learning',
-            data: existingData,
+            type: 'supervised',
+            input: existingData,
             context: {
                 userId,
                 timestamp: Date.now()
@@ -205,13 +205,13 @@ Provide actionable recommendations for improvement based on the learning data.`
 
         // Learn from workflow data
         const learningData: LearningData = {
-            type: 'workflow-optimization',
-            data: {
+            type: 'adaptive',
+            input: {
                 userId,
                 workflowData,
-                optimizations,
-                timestamp: Date.now()
+                optimizations
             },
+            timestamp: Date.now(),
             context: {
                 workspaceId: this.workspace.workspace?.resource.toString()
             }
@@ -277,11 +277,10 @@ Provide actionable recommendations for improvement based on the learning data.`
      */
     async provideLearningFeedback(userId: string, feedbackType: string, isPositive: boolean, context?: any): Promise<void> {
         const feedback: UserFeedback = {
-            type: feedbackType,
-            isPositive,
-            confidence: isPositive ? 0.8 : 0.6,
-            explanation: context?.explanation,
-            timestamp: Date.now()
+            rating: isPositive ? 5 : 1,
+            helpful: isPositive,
+            comment: context?.explanation,
+            outcome: isPositive ? 'accepted' : 'rejected'
         };
 
         const learningContext: LearningContext = {

@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
+import { inject, injectable } from '@theia/core/shared/inversify';
 import { BaseWidget, codicon, Message } from '@theia/core/lib/browser';
 import { nls } from '@theia/core/lib/common/nls';
 import { Disposable, DisposableCollection } from '@theia/core/lib/common/disposable';
@@ -55,15 +55,6 @@ export class CognitiveAssistantWidget extends BaseWidget {
     static readonly ID = 'cognitive.assistant';
     static readonly LABEL = nls.localize('theia/ai/cognitive/assistant', 'Cognitive Assistant');
 
-    @inject(IntelligentAssistanceAgent)
-    protected readonly assistantAgent: IntelligentAssistanceAgent;
-
-    @inject(OpenCogService)
-    protected readonly openCogService: OpenCogService;
-
-    @inject(EditorManager)
-    protected readonly editorManager: EditorManager;
-
     protected readonly toDispose = new DisposableCollection();
     protected messages: ChatMessage[] = [];
     protected currentInput: string = '';
@@ -71,7 +62,15 @@ export class CognitiveAssistantWidget extends BaseWidget {
     protected context: AssistantContext = {};
     private inputRef = React.createRef<HTMLTextAreaElement>();
 
-    @postConstruct()
+    constructor(
+        @inject(IntelligentAssistanceAgent) protected readonly assistantAgent: IntelligentAssistanceAgent,
+        @inject(OpenCogService) protected readonly openCogService: OpenCogService,
+        @inject(EditorManager) protected readonly editorManager: EditorManager
+    ) {
+        super();
+        this.init();
+    }
+
     protected init(): void {
         this.id = CognitiveAssistantWidget.ID;
         this.title.label = CognitiveAssistantWidget.LABEL;

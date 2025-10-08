@@ -16,9 +16,9 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser';
-import { EditorManager } from '@theia/editor/lib/browser';
-import { MessageService } from '@theia/core';
+import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
+import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
+import { MessageService } from '@theia/core/lib/common/message-service';
 import { OpenCogService, KnowledgeManagementService } from '../common';
 import { 
     Atom, 
@@ -69,6 +69,14 @@ export interface AssistanceResponse {
  */
 @injectable()
 export class IntelligentAssistanceAgent implements Agent {
+    readonly id = 'intelligent-assistance';
+    readonly name = 'Intelligent Assistance Agent';
+    readonly description = 'Provides context-aware intelligent assistance with cognitive reasoning';
+    readonly variables: any[] = [];
+    readonly prompts: any[] = [];
+    readonly languageModelRequirements: LanguageModelRequirement[] = [];
+    readonly agentSpecificVariables: any[] = [];
+    readonly functions: any[] = [];
 
     private assistanceHistory: Map<string, AssistanceResponse[]> = new Map();
     private userExpertiseProfile: Map<string, any> = new Map();
@@ -81,15 +89,6 @@ export class IntelligentAssistanceAgent implements Agent {
         @inject(EditorManager) private readonly editorManager: EditorManager,
         @inject(MessageService) private readonly messageService: MessageService
     ) {
-        // Initialize agent properties
-        this.id = 'intelligent-assistance';
-        this.name = 'Intelligent Assistance Agent';
-        this.description = 'Provides context-aware intelligent assistance with cognitive reasoning';
-        super(
-            'intelligent-assistance-agent',
-            'Intelligent Development Assistant',
-            'Cognitive AI assistant providing context-aware development support and learning guidance'
-        );
         this.initializeAssistanceCapabilities();
     }
 

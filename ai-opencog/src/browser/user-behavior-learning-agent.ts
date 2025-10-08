@@ -14,11 +14,11 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { injectable, inject, postConstruct } from '@theia/core/shared/inversify';
+import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser';
-import { EditorManager } from '@theia/editor/lib/browser';
-import { FileService } from '@theia/filesystem/lib/browser';
+import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
+import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
+import { FileService } from '@theia/filesystem/lib/browser/file-service';
 import { VariableResolverService } from '@theia/variable-resolver/lib/browser';
 import { OpenCogService } from '../common/opencog-service';
 import { LearningData, UserFeedback, LearningContext, UserBehaviorPattern } from '../common/opencog-types';
@@ -71,8 +71,8 @@ export class UserBehaviorLearningAgent implements Agent {
 
     readonly prompts = [
         {
-            id: 'behavior-analysis-prompt',
-            content: `Analyze user behavior patterns based on the following data:
+            defaultVariant: 'behavior-analysis-prompt',
+            'behavior-analysis-prompt': `Analyze user behavior patterns based on the following data:
             
 Current Session: {{currentSession}}
 Behavior Context: {{userBehaviorContext}}
@@ -87,8 +87,8 @@ Based on this information, provide insights on:
 Focus on actionable insights that can improve the development experience.`
         },
         {
-            id: 'personalization-prompt',
-            content: `Based on user behavior analysis and learning progress: {{learningProgress}}
+            defaultVariant: 'personalization-prompt',
+            'personalization-prompt': `Based on user behavior analysis and learning progress: {{learningProgress}}
 
 Suggest personalized IDE configurations and workflows that would benefit this user:
 - Interface customizations
@@ -111,9 +111,10 @@ Provide specific, actionable recommendations tailored to this user's behavior pa
         @inject(EditorManager) private readonly editorManager: EditorManager,
         @inject(FileService) private readonly fileService: FileService,
         @inject(VariableResolverService) private readonly variableService: VariableResolverService
-    ) {}
+    ) {
+        this.init();
+    }
 
-    @postConstruct()
     protected init(): void {
         this.startBehaviorTracking();
         this.activeSessionId = this.generateSessionId();
@@ -298,8 +299,7 @@ Provide specific, actionable recommendations tailored to this user's behavior pa
             rating: wasHelpful ? 5 : 2,
             helpful: wasHelpful,
             comment: `Behavioral feedback for ${assistanceType}`,
-            outcome: wasHelpful ? 'accepted' : 'rejected',
-            timestamp: Date.now()
+            outcome: wasHelpful ? 'accepted' : 'rejected'
         };
 
         const learningContext: LearningContext = {
@@ -323,7 +323,7 @@ Provide specific, actionable recommendations tailored to this user's behavior pa
     private async learnFromBehavior(behavior: UserBehavior): Promise<void> {
         const learningData: LearningData = {
             type: 'behavioral',
-            data: {
+            input: {
                 action: behavior.action,
                 context: behavior.context,
                 timing: behavior.timestamp,
@@ -332,9 +332,8 @@ Provide specific, actionable recommendations tailored to this user's behavior pa
             },
             context: {
                 userId: behavior.userId,
-                sessionId: behavior.sessionId,
                 workspaceId: this.workspaceService.workspace?.resource.toString(),
-                currentTask: 'user_behavior_learning'
+                currentTask: behavior.sessionId || 'user_behavior_learning'
             },
             timestamp: behavior.timestamp
         };
