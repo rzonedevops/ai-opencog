@@ -19,9 +19,7 @@
     "maxNodeModuleJsDepth": 0,
     "noEmitOnError": false,
     "emitDeclarationOnly": false,
-    "types": [
-      "node"
-    ]
+    "types": []
   },
   "include": [
     "src/common/**/*",

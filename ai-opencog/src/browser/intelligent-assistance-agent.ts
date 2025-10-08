@@ -427,22 +427,92 @@ export class IntelligentAssistanceAgent implements Agent {
     private async generateNextSteps(context: AssistanceContext, suggestions: any[]): Promise<string[]> {
         const nextSteps: string[] = [];
 
+        // Context-aware next steps based on suggestion types
         if (suggestions.some(s => s.type === 'debugging')) {
             nextSteps.push('1. Run debugging tools to gather more information');
             nextSteps.push('2. Add logging statements to trace execution flow');
+            nextSteps.push('3. Use cognitive debugging insights for root cause analysis');
         }
 
         if (suggestions.some(s => s.type === 'refactoring')) {
             nextSteps.push('1. Create unit tests before refactoring');
             nextSteps.push('2. Refactor in small, incremental steps');
+            nextSteps.push('3. Use AI-powered refactoring suggestions for optimal results');
         }
 
         if (suggestions.some(s => s.type === 'best-practice')) {
             nextSteps.push('1. Review team coding standards and guidelines');
             nextSteps.push('2. Set up automated linting and code quality tools');
+            nextSteps.push('3. Enable cognitive quality monitoring for proactive improvements');
         }
 
-        return nextSteps;
+        if (suggestions.some(s => s.type === 'code-completion')) {
+            nextSteps.push('1. Review AI-suggested code completions');
+            nextSteps.push('2. Integrate suggestions into your current implementation');
+            nextSteps.push('3. Provide feedback to improve future suggestions');
+        }
+
+        // Project-level next steps based on current development phase
+        if (context.projectContext?.phase) {
+            nextSteps.push(...this.generatePhaseSpecificNextSteps(context.projectContext.phase));
+        }
+
+        // If no specific suggestions, provide general development next steps
+        if (nextSteps.length === 0) {
+            nextSteps.push(...this.generateGeneralNextSteps(context));
+        }
+
+        // Add post-Phase 6 enhancement recommendations
+        nextSteps.push(...this.generatePostPhase6NextSteps());
+
+        return nextSteps.slice(0, 8); // Limit to most relevant steps
+    }
+
+    private generatePhaseSpecificNextSteps(phase: string): string[] {
+        const phaseSteps: { [key: string]: string[] } = {
+            'development': [
+                '1. Run comprehensive tests to validate current implementation',
+                '2. Review code quality metrics and cognitive insights',
+                '3. Plan next development iteration based on user feedback'
+            ],
+            'testing': [
+                '1. Execute integration tests across all cognitive components',
+                '2. Validate distributed reasoning capabilities',
+                '3. Perform load testing for production readiness'
+            ],
+            'production': [
+                '1. Monitor production metrics and cognitive performance',
+                '2. Collect user feedback for continuous improvement',
+                '3. Plan capacity scaling based on usage patterns'
+            ]
+        };
+
+        return phaseSteps[phase] || [];
+    }
+
+    private generateGeneralNextSteps(context: AssistanceContext): string[] {
+        const steps = [
+            '1. Review current implementation against cognitive best practices',
+            '2. Consider leveraging advanced AI features for enhanced productivity',
+            '3. Explore distributed reasoning capabilities for complex problems'
+        ];
+
+        // Add language-specific recommendations
+        if (context.projectContext?.language) {
+            steps.push(`4. Apply ${context.projectContext.language}-specific optimization patterns`);
+        }
+
+        return steps;
+    }
+
+    private generatePostPhase6NextSteps(): string[] {
+        // Since all phases 1-6 are complete, suggest Phase 7+ enhancements
+        return [
+            '🚀 Phase 7+: Explore advanced cognitive enhancements',
+            '🤖 Consider multi-agent collaboration features', 
+            '📊 Implement advanced analytics and insights dashboards',
+            '🌐 Explore cross-IDE cognitive integration opportunities'
+        ];
     }
 
     private async generateLearningOpportunities(context: AssistanceContext, userExpertise: any): Promise<string[]> {
