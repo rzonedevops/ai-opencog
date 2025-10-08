@@ -15,9 +15,9 @@
 // *****************************************************************************
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Agent } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser';
-import { EditorManager } from '@theia/editor/lib/browser';
+import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
+import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
+import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
 import { MonacoEditor } from '@theia/monaco/lib/browser/monaco-editor';
 import { OpenCogService, KnowledgeManagementService } from '../common';
 import { 
@@ -43,6 +43,14 @@ import { KnowledgeGraph, KnowledgeDiscoveryQuery } from '../common/knowledge-man
  */
 @injectable()
 export class ComprehensiveCodeAnalysisAgent implements Agent {
+    readonly id = 'comprehensive-code-analysis';
+    readonly name = 'Comprehensive Code Analysis Agent';
+    readonly description = 'Provides comprehensive code analysis with cognitive reasoning';
+    readonly variables: any[] = [];
+    readonly prompts: any[] = [];
+    readonly languageModelRequirements: LanguageModelRequirement[] = [];
+    readonly agentSpecificVariables: any[] = [];
+    readonly functions: any[] = [];
 
     private collaborativeKnowledgeGraph: KnowledgeGraph | undefined;
     private userBehaviorPatterns: Map<string, UserBehaviorPattern> = new Map();
@@ -420,13 +428,13 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
             context: { fileUri, analysisType: 'security' },
             scope: 'comprehensive',
             options: {
-                patternTypes: ['security-vulnerability', 'input-validation', 'authentication-pattern'],
+                patternTypes: ['code', 'structural', 'behavioral'],
                 maxResults: 15
             }
         });
 
         const reasoning = await this.openCogService.reason({
-            type: 'security-analysis',
+            type: 'code-analysis',
             atoms: patterns.map(p => p.pattern),
             context: { fileUri, securityFocus: true }
         });
@@ -446,13 +454,13 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
             context: { fileUri, analysisType: 'performance' },
             scope: 'comprehensive',
             options: {
-                patternTypes: ['performance-pattern', 'algorithm-complexity', 'resource-usage'],
+                patternTypes: ['code', 'behavioral', 'usage'],
                 maxResults: 18
             }
         });
 
         const reasoning = await this.openCogService.reason({
-            type: 'performance-analysis',
+            type: 'code-analysis',
             atoms: patterns.map(p => p.pattern),
             context: { fileUri, performanceFocus: true }
         });
@@ -471,9 +479,9 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
 
         // Discover collaborative patterns and team insights
         const discoveryQuery: KnowledgeDiscoveryQuery = {
-            type: 'collaborative',
+            type: 'semantic',
             seedConcepts: ['code-review-pattern', 'team-coding-style'],
-            scope: 'team-wide',
+            scope: 'global',
             maxResults: 10
         };
 
@@ -504,7 +512,7 @@ export class ComprehensiveCodeAnalysisAgent implements Agent {
     private async synthesizeCognitiveResults(results: any, fileUri: string): Promise<any> {
         // Use OpenCog reasoning to synthesize all analysis results
         const synthesisQuery: ReasoningQuery = {
-            type: 'cognitive-synthesis',
+            type: 'code-analysis',
             atoms: [],
             context: {
                 fileUri,
