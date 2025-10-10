@@ -163,12 +163,12 @@ export class RealTimeCodeAnalyzer implements Disposable {
                 if (conclusion.type === 'performance-optimization') {
                     optimizations.push({
                         id: `opencog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                        title: conclusion.title || 'Performance Optimization',
-                        description: conclusion.description || conclusion.value,
-                        impact: conclusion.impact || 'medium',
-                        category: conclusion.category || 'algorithm',
-                        suggestion: conclusion.suggestion || conclusion.explanation,
-                        confidence: conclusion.confidence || 0.6
+                        title: (conclusion as any).name || 'Performance Optimization',
+                        description: (conclusion as any).description || 'Performance optimization suggestion',
+                        impact: (conclusion as any).strength > 0.8 ? 'high' : (conclusion as any).strength > 0.5 ? 'medium' : 'low',
+                        category: 'algorithm',
+                        suggestion: (conclusion as any).toString() || 'Apply optimization',
+                        confidence: (conclusion as any).strength || 0.6
                     });
                 }
             }

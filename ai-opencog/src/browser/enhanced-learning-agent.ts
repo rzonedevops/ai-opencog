@@ -15,8 +15,8 @@
 // *****************************************************************************
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
+import { Agent } from '@theia/ai-core/lib/common/agent';
+import { WorkspaceService } from '@theia/workspace/lib/browser';
 import { OpenCogService } from '../common/opencog-service';
 import { LearningData, UserFeedback, LearningContext, UserBehaviorPattern, AdaptationStrategy } from '../common/opencog-types';
 
@@ -98,8 +98,10 @@ export class LearningAgent implements Agent {
 
     readonly prompts = [
         {
-            defaultVariant: 'learning-analysis-prompt',
-            'learning-analysis-prompt': `Analyze learning data and provide insights:
+            id: 'learning-analysis',
+            defaultVariant: {
+                id: 'learning-analysis-prompt',
+                template: `Analyze learning data and provide insights:
             
 Developer Profile: {{developerProfile}}
 Code Quality Metrics: {{codeQuality}}
@@ -107,10 +109,11 @@ Workflow Data: {{workflowOptimization}}
 Learning Progress: {{learningProgress}}
 
 Provide actionable recommendations for improvement based on the learning data.`
+            }
         }
     ];
 
-    languageModelRequirements: LanguageModelRequirement[] = [
+    languageModelRequirements = [
         {
             purpose: 'learning-analysis',
             identifier: 'learning-model',
@@ -145,13 +148,14 @@ Provide actionable recommendations for improvement based on the learning data.`
         // Learn from the behavior data
         const learningData: LearningData = {
             type: 'behavioral',
-            data: {
+            input: {
                 userId,
                 action,
                 context,
                 timestamp: Date.now()
             },
             context: {
+                userId,
                 workspaceId: this.workspace.workspace?.resource.toString(),
                 currentTask: context.sessionId || 'unknown'
             }

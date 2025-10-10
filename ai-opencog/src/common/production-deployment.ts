@@ -44,11 +44,12 @@ export interface RollbackOptions {
 @injectable()
 export class ProductionDeploymentService {
 
-    @inject(ProductionConfigurationService)
-    protected readonly configService: ProductionConfigurationService;
-
     private deployments = new Map<string, DeploymentInfo>();
     private currentDeployment: DeploymentInfo | undefined;
+
+    constructor(
+        @inject(ProductionConfigurationService) protected readonly configService: ProductionConfigurationService
+    ) {}
 
     /**
      * Deploy the OpenCog integration to production

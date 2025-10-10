@@ -16,7 +16,7 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser';
+import { WorkspaceService } from '@theia/workspace/lib/common';
 import { OpenCogService } from '../common/opencog-service';
 import { Atom, ReasoningQuery } from '../common/opencog-types';
 

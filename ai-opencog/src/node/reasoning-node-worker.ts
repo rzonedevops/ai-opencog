@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { injectable, inject, named } from '@theia/core/shared/inversify';
+import { injectable, inject } from '@theia/core/shared/inversify';
 import { ILogger } from '@theia/core/lib/common/logger';
 import { ReasoningNodeWorker } from '../common/distributed-reasoning-service';
 import {
@@ -31,18 +31,6 @@ import { PLNReasoningEngine, PatternMatchingEngine, CodeAnalysisReasoningEngine 
 @injectable()
 export class ReasoningNodeWorkerImpl implements ReasoningNodeWorker {
 
-    @inject(ILogger) @named('reasoning-node')
-    protected readonly logger: ILogger;
-
-    @inject(PLNReasoningEngine)
-    protected readonly plnEngine: PLNReasoningEngine;
-
-    @inject(PatternMatchingEngine)
-    protected readonly patternEngine: PatternMatchingEngine;
-
-    @inject(CodeAnalysisReasoningEngine)
-    protected readonly codeAnalysisEngine: CodeAnalysisReasoningEngine;
-
     private nodeId: string;
     private capabilities: ReasoningCapability[];
     private status: NodeStatus = 'online';
@@ -51,7 +39,12 @@ export class ReasoningNodeWorkerImpl implements ReasoningNodeWorker {
     private activeTasks = 0;
     private maxConcurrentTasks = 5;
 
-    constructor() {
+    constructor(
+        @inject(ILogger) protected readonly logger: ILogger,
+        @inject(PLNReasoningEngine) protected readonly plnEngine: PLNReasoningEngine,
+        @inject(PatternMatchingEngine) protected readonly patternEngine: PatternMatchingEngine,
+        @inject(CodeAnalysisReasoningEngine) protected readonly codeAnalysisEngine: CodeAnalysisReasoningEngine
+    ) {
         this.nodeId = this.generateNodeId();
         this.capabilities = [
             'deductive',

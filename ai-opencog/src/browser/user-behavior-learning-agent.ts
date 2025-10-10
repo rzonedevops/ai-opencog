@@ -15,9 +15,9 @@
 // *****************************************************************************
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
-import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
+import { Agent } from '@theia/ai-core/lib/common/agent';
+import { WorkspaceService } from '@theia/workspace/lib/browser';
+import { EditorManager } from '@theia/editor/lib/browser';
 import { FileService } from '@theia/filesystem/lib/browser/file-service';
 import { VariableResolverService } from '@theia/variable-resolver/lib/browser';
 import { OpenCogService } from '../common/opencog-service';
@@ -71,8 +71,10 @@ export class UserBehaviorLearningAgent implements Agent {
 
     readonly prompts = [
         {
-            defaultVariant: 'behavior-analysis-prompt',
-            'behavior-analysis-prompt': `Analyze user behavior patterns based on the following data:
+            id: 'behavior-analysis',
+            defaultVariant: {
+                id: 'behavior-analysis-prompt',
+                template: `Analyze user behavior patterns based on the following data:
             
 Current Session: {{currentSession}}
 Behavior Context: {{userBehaviorContext}}
@@ -85,10 +87,13 @@ Based on this information, provide insights on:
 4. Predicted next actions
 
 Focus on actionable insights that can improve the development experience.`
+            }
         },
         {
-            defaultVariant: 'personalization-prompt',
-            'personalization-prompt': `Based on user behavior analysis and learning progress: {{learningProgress}}
+            id: 'personalization',
+            defaultVariant: {
+                id: 'personalization-prompt',
+                template: `Based on user behavior analysis and learning progress: {{learningProgress}}
 
 Suggest personalized IDE configurations and workflows that would benefit this user:
 - Interface customizations
@@ -97,6 +102,7 @@ Suggest personalized IDE configurations and workflows that would benefit this us
 - Learning resources
 
 Provide specific, actionable recommendations tailored to this user's behavior patterns.`
+            }
         }
     ];
 

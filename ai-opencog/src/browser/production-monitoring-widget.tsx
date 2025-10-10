@@ -18,7 +18,7 @@ import { injectable, inject } from '@theia/core/shared/inversify';
 import { ReactWidget } from '@theia/core/lib/browser/widgets/react-widget';
 import { MessageService } from '@theia/core/lib/common/message-service';
 import React, { useEffect, useState } from 'react';
-import { ProductionOptimizationService, ProductionMetrics, SystemHealth, AlertEvent } from '../common';
+import { ProductionOptimizationService, ProductionMetrics, SystemHealth, AlertEvent, ProductionOptimizationServiceSymbol } from '../common';
 
 export const PRODUCTION_MONITORING_WIDGET_ID = 'production.monitoring';
 
@@ -29,7 +29,7 @@ export class ProductionMonitoringWidget extends ReactWidget {
     static readonly LABEL = 'Production Monitoring';
 
     constructor(
-        @inject(ProductionOptimizationService) protected readonly productionService: ProductionOptimizationService,
+        @inject(ProductionOptimizationServiceSymbol) protected readonly productionService: ProductionOptimizationService,
         @inject(MessageService) protected readonly messageService: MessageService
     ) {
         super();
@@ -83,12 +83,8 @@ const ProductionMonitoringComponent: React.FC<ProductionMonitoringComponentProps
         };
 
         const setupEventListeners = () => {
-            productionService.onMetricsCollected(setMetrics);
-            productionService.onHealthChanged(setHealth);
-            productionService.onPerformanceAlert(alert => {
-                setAlerts(prev => [...prev, alert]);
-                messageService.warn(`Performance Alert: ${alert.message}`);
-            });
+            // Event listeners would be set up here if the interface provides them
+            // For now, we'll use polling via getMetrics and getHealth
         };
 
         updateMetrics();

@@ -16,8 +16,8 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
-import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
+import { WorkspaceService } from '@theia/workspace/lib/browser';
+import { EditorManager } from '@theia/editor/lib/browser';
 import { MessageService } from '@theia/core/lib/common/message-service';
 import { OpenCogService, KnowledgeManagementService } from '../common';
 import { 
@@ -74,7 +74,7 @@ export class IntelligentAssistanceAgent implements Agent {
     readonly description = 'Provides context-aware intelligent assistance with cognitive reasoning';
     readonly variables: any[] = [];
     readonly prompts: any[] = [];
-    readonly languageModelRequirements: LanguageModelRequirement[] = [];
+    readonly languageModelRequirements: any[] = [];
     readonly agentSpecificVariables: any[] = [];
     readonly functions: any[] = [];
 
@@ -543,10 +543,10 @@ export class IntelligentAssistanceAgent implements Agent {
     private async learnFromAssistanceInteraction(context: AssistanceContext, response: AssistanceResponse): Promise<void> {
         const learningData: LearningData = {
             input: JSON.stringify(context),
-            output: JSON.stringify(response),
+            expectedOutput: JSON.stringify(response),
             context: {
+                userId: context.userId,
                 interactionType: 'intelligent-assistance',
-                userIntent: context.userIntent,
                 timestamp: Date.now()
             },
             feedback: {

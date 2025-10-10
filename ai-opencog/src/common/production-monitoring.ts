@@ -91,9 +91,6 @@ export interface Alert {
 @injectable()
 export class ProductionMonitoringService {
 
-    @inject(ProductionConfigurationService)
-    protected readonly configService: ProductionConfigurationService;
-
     private readonly onMetricsUpdatedEmitter = new Emitter<ProductionMetrics>();
     private readonly onAlertEmitter = new Emitter<Alert>();
     private readonly onUsageUpdateEmitter = new Emitter<UsageAnalytics>();
@@ -108,6 +105,10 @@ export class ProductionMonitoringService {
     readonly onMetricsUpdated: Event<ProductionMetrics> = this.onMetricsUpdatedEmitter.event;
     readonly onAlert: Event<Alert> = this.onAlertEmitter.event;
     readonly onUsageUpdate: Event<UsageAnalytics> = this.onUsageUpdateEmitter.event;
+
+    constructor(
+        @inject(ProductionConfigurationService) protected readonly configService: ProductionConfigurationService
+    ) {}
 
     /**
      * Start production monitoring
