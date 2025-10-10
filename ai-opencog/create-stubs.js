@@ -5,6 +5,7 @@ const path = require('path');
 const dirs = [
   'node_modules/@theia/core/shared',
   'node_modules/@theia/core/lib/common',
+  'node_modules/@theia/core/lib/browser/widgets',
   'node_modules/@theia/editor/lib/browser',
   'node_modules/@theia/filesystem/lib/common',
   'node_modules/@theia/filesystem/lib/browser',
@@ -28,6 +29,8 @@ const dirs = [
   'node_modules/@theia/core/lib/common',
   'node_modules/@theia/core',
   'node_modules/@theia/monaco-editor-core',
+  'node_modules/@theia/monaco-editor-core/esm/vs/editor/common',
+  'node_modules/@theia/monaco-editor-core/esm/vs/editor/common/core',
   'node_modules/react',
   'node_modules/@types/react'
 ];
@@ -496,6 +499,7 @@ export = React;
 export namespace React {
   type ReactNode = any;
   type KeyboardEvent<T = Element> = any;
+  type FC<P = {}> = any;
   interface Component<P = {}, S = {}> {
     render(): any;
   }
@@ -507,6 +511,9 @@ export namespace React {
   }
   function createElement(type: any, props?: any, ...children: any[]): any;
   function createRef<T>(): RefObject<T>;
+  function useState<T>(initialState: T | (() => T)): [T, (value: T) => void];
+  function useEffect(effect: () => void | (() => void), deps?: any[]): void;
+  function useCallback<T extends (...args: any[]) => any>(callback: T, deps: any[]): T;
   const Fragment: any;
 }
 
@@ -565,6 +572,7 @@ declare namespace React {
   type ReactNode = any;
   type KeyboardEvent<T = any> = any;
   type SyntheticEvent = any;
+  type FC<P = {}> = any;
   interface Component<P = {}, S = {}> {
     render(): any;
   }
@@ -576,6 +584,9 @@ declare namespace React {
   }
   function createElement(type: any, props?: any, ...children: any[]): any;
   function createRef<T>(): RefObject<T>;
+  function useState<T>(initialState: T | (() => T)): [T, (value: T) => void];
+  function useEffect(effect: () => void | (() => void), deps?: any[]): void;
+  function useCallback<T extends (...args: any[]) => any>(callback: T, deps: any[]): T;
   const Fragment: any;
 }
 `,
@@ -595,7 +606,59 @@ declare module 'react' {
   }
   function createElement(type: any, props?: any, ...children: any[]): any;
   function createRef<T>(): RefObject<T>;
+  function useState<T>(initialState: T | (() => T)): [T, (value: T) => void];
+  function useEffect(effect: () => void | (() => void), deps?: any[]): void;
+  function useCallback<T extends (...args: any[]) => any>(callback: T, deps: any[]): T;
   const Fragment: any;
+}
+`,
+  'node_modules/@theia/core/lib/browser/widgets/react-widget.d.ts': `
+export class ReactWidget {
+  constructor();
+  id: string;
+  title: any;
+  node: HTMLElement;
+  protected render(): React.ReactNode;
+  update(): void;
+}
+`,
+  'node_modules/@theia/core/lib/common/message-service.d.ts': `
+export class MessageService {
+  info(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
+  log(message: string): void;
+}
+export interface Message {
+  text: string;
+  type?: MessageType;
+  options?: MessageOptions;
+}
+export enum MessageType {
+  Info = 1,
+  Warning = 2,
+  Error = 3,
+  Log = 4,
+  Progress = 5
+}
+export interface MessageOptions {
+  timeout?: number;
+}
+`,
+  'node_modules/@theia/monaco-editor-core/esm/vs/editor/common/model.d.ts': `
+export interface ITextModel {
+  getValue(): string;
+  getLineCount(): number;
+  [key: string]: any;
+}
+`,
+  'node_modules/@theia/monaco-editor-core/esm/vs/editor/common/core/range.d.ts': `
+export class Range {
+  constructor(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number);
+  startLineNumber: number;
+  startColumn: number;
+  endLineNumber: number;
+  endColumn: number;
 }
 `
 };
