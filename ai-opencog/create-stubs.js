@@ -147,6 +147,7 @@ export interface LanguageModelRequirement {
   identifier: string;
   [key: string]: any;
 }
+export { LanguageModelRequirement };
 `,
   'node_modules/@theia/ai-chat/lib/common/chat-agents.d.ts': `
 export interface ChatAgent {
@@ -204,12 +205,13 @@ export class DisposableCollection implements Disposable {
   'node_modules/@theia/core/lib/browser/widgets.d.ts': `
 export const codicon: any;
 export class BaseWidget {
-  constructor(options?: any);
+  constructor();
   id: string;
   title: any;
   node: HTMLElement;
   onActivateRequest(msg?: any): void;
   update(): void;
+  dispose(): void;
 }
 export class Widget {
   id: string;
@@ -450,6 +452,7 @@ export class PreferenceService {
   get(key: string): any;
 }
 export class BaseWidget {
+  constructor();
   id: string;
   title: any;
   node: HTMLElement;
@@ -619,7 +622,9 @@ export class ReactWidget {
   title: any;
   node: HTMLElement;
   protected render(): React.ReactNode;
+  protected onCloseRequest(msg?: any): void;
   update(): void;
+  dispose(): void;
 }
 `,
   'node_modules/@theia/core/lib/common/message-service.d.ts': `
