@@ -10,6 +10,7 @@ const dirs = [
   'node_modules/@theia/filesystem/lib/browser',
   'node_modules/@theia/monaco/lib/browser',
   'node_modules/@theia/workspace/lib/browser',
+  'node_modules/@theia/workspace/lib/common',
   'node_modules/@theia/variable-resolver/lib',
   'node_modules/@theia/navigator/lib/browser',
   'node_modules/@theia/terminal/lib/browser/base',
@@ -132,6 +133,16 @@ export interface Agent {
   id: string;
   name: string;
   description?: string;
+  variables?: string[];
+  prompts?: any[];
+  functions?: string[];
+  languageModelRequirements?: LanguageModelRequirement[];
+  agentSpecificVariables?: any[];
+}
+export interface LanguageModelRequirement {
+  purpose: string;
+  identifier: string;
+  [key: string]: any;
 }
 `,
   'node_modules/@theia/ai-chat/lib/common/chat-agents.d.ts': `
@@ -190,12 +201,18 @@ export class DisposableCollection implements Disposable {
   'node_modules/@theia/core/lib/browser/widgets.d.ts': `
 export const codicon: any;
 export class BaseWidget {
-  onActivateRequest(): void;
+  constructor(options?: any);
+  id: string;
+  title: any;
+  node: HTMLElement;
+  onActivateRequest(msg?: any): void;
+  update(): void;
 }
 export class Widget {
   id: string;
   title: any;
   node: HTMLElement;
+  update(): void;
 }
 export interface WidgetManager {
   getWidgets(name: string): any[];
@@ -231,6 +248,18 @@ export class EditorManager {
   all: any[];
   open: any;
   activeEditor: any;
+  currentEditor: any;
+}
+`,
+  'node_modules/@theia/editor/lib/browser/index.d.ts': `
+export class EditorManager {
+  onCreated: any;
+  onCurrentEditorChanged: any;
+  onActiveEditorChanged: any;
+  all: any[];
+  open: any;
+  activeEditor: any;
+  currentEditor: any;
 }
 `,
   'node_modules/@theia/navigator/lib/browser/navigator-contribution.d.ts': `
@@ -284,6 +313,22 @@ export class WorkspaceService {
   workspace: any;
   roots: any[];
   readFile(uri: any): Promise<string>;
+}
+`,
+  'node_modules/@theia/workspace/lib/browser/index.d.ts': `
+export class Workspace {
+  readonly roots: any[];
+  tryGetRoots(): any[];
+}
+export class WorkspaceService {
+  workspace: any;
+  roots: any[];
+  readFile(uri: any): Promise<string>;
+}
+`,
+  'node_modules/@theia/workspace/lib/common/index.d.ts': `
+export class WorkspaceServer {
+  getMostRecentlyUsedWorkspace(): Promise<string | undefined>;
 }
 `,
   'node_modules/@theia/core/lib/common/uri.d.ts': `

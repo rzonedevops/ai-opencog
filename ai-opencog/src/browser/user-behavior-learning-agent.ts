@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Agent } from '@theia/ai-core/lib/common/agent';
+import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
 import { WorkspaceService } from '@theia/workspace/lib/browser';
 import { EditorManager } from '@theia/editor/lib/browser';
 import { FileService } from '@theia/filesystem/lib/browser/file-service';
@@ -568,4 +568,6 @@ Provide specific, actionable recommendations tailored to this user's behavior pa
             identifier: 'behavior-model',
         }
     ];
+
+    agentSpecificVariables = [];
 }
