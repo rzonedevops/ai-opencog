@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Agent } from '@theia/ai-core/lib/common/agent';
+import { Agent, LanguageModelRequirement } from '@theia/ai-core/lib/common/agent';
 import { OpenCogService } from '../common/opencog-service';
 import { PatternInput, PatternResult, Atom } from '../common/opencog-types';
 

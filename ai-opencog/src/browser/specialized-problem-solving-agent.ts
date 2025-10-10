@@ -67,6 +67,14 @@ export interface SolutionMetrics {
  */
 @injectable()
 export class SpecializedProblemSolvingAgent implements Agent {
+    readonly id = 'specialized-problem-solving-agent';
+    readonly name = 'Specialized Problem-Solving Agent';
+    readonly description = 'Domain-specific cognitive agent for specialized software engineering problems';
+    readonly variables: any[] = [];
+    readonly prompts: any[] = [];
+    readonly functions: any[] = [];
+    readonly languageModelRequirements: any[] = [];
+    readonly agentSpecificVariables: any[] = [];
 
     private problemSolvingStrategies: Map<string, ProblemSolvingStrategy> = new Map();
     private solutionHistory: Map<string, ReasoningSolution[]> = new Map();
@@ -76,11 +84,6 @@ export class SpecializedProblemSolvingAgent implements Agent {
         @inject(OpenCogService) private readonly openCogService: OpenCogService,
         @inject(KnowledgeManagementService) private readonly knowledgeService: KnowledgeManagementService
     ) {
-        super(
-            'specialized-problem-solving-agent',
-            'Specialized Problem-Solving Agent',
-            'Domain-specific cognitive agent for specialized software engineering problems'
-        );
         this.initializeSpecializedStrategies();
     }
 

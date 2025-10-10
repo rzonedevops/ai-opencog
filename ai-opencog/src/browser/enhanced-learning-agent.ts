@@ -120,6 +120,8 @@ Provide actionable recommendations for improvement based on the learning data.`
         }
     ];
 
+    agentSpecificVariables = [];
+
     private developerProfiles = new Map<string, DeveloperBehaviorLearning>();
     private codeQualityData = new Map<string, CodeQualityLearning>();
     private workflowOptimizations = new Map<string, WorkflowOptimization[]>();

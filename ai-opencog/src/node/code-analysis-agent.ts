@@ -16,7 +16,7 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Agent } from '@theia/ai-core/lib/common/agent';
-import { WorkspaceService } from '@theia/workspace/lib/common';
+import { WorkspaceServer } from '@theia/workspace/lib/common';
 import { OpenCogService } from '../common/opencog-service';
 import { Atom, ReasoningQuery } from '../common/opencog-types';
 
@@ -28,10 +28,15 @@ export class CodeAnalysisAgent implements Agent {
     public id: string;
     public name: string;
     public description: string;
+    public variables: any[] = [];
+    public prompts: any[] = [];
+    public functions: any[] = [];
+    public languageModelRequirements: any[] = [];
+    public agentSpecificVariables: any[] = [];
 
     constructor(
         @inject(OpenCogService) private opencog: OpenCogService,
-        @inject(WorkspaceService) private workspace: WorkspaceService
+        @inject(WorkspaceServer) private workspace: WorkspaceServer
     ) {
         this.id = 'opencog-code-analysis';
         this.name = 'OpenCog Code Analysis';
