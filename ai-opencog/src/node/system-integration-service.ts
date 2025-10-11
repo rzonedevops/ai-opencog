@@ -83,7 +83,7 @@ export class SystemIntegrationService {
         this.cognitiveCache = new CognitiveCache();
         this.personalization = new CognitivePersonalization(opencog);
         this.resourceManager = new ResourceManager();
-        this.feedbackIntegration = new FeedbackIntegration();
+        this.feedbackIntegration = new FeedbackIntegration(opencog, this.personalization);
         
         this.startPeriodicOptimization();
     }

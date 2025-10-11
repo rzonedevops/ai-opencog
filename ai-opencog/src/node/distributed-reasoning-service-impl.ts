@@ -57,21 +57,6 @@ export class DistributedReasoningServiceImpl implements DistributedReasoningServ
     private completedTasks: Map<string, DistributedReasoningResult> = new Map();
     private heartbeatTimers: Map<string, NodeJS.Timeout> = new Map();
 
-    constructor(
-        @inject(ILogger) protected readonly logger: ILogger
-    ) {
-        this.config = {
-            maxNodes: 10,
-            taskTimeout: 300000,
-            heartbeatInterval: 30000,
-            loadBalancingStrategy: 'round-robin',
-            aggregationStrategy: 'weighted-average',
-            enableFaultTolerance: true,
-            retryAttempts: 3,
-            minConfidenceScore: 0.7
-        };
-    }
-    
     // Event emitters
     private readonly onNodeRegisteredEmitter = new Emitter<{ node: ReasoningNode }>();
     private readonly onNodeDeregisteredEmitter = new Emitter<{ nodeId: string }>();
@@ -83,7 +68,9 @@ export class DistributedReasoningServiceImpl implements DistributedReasoningServ
     readonly onTaskCompleted: Event<{ result: DistributedReasoningResult }> = this.onTaskCompletedEmitter.event;
     readonly onTaskFailed: Event<{ taskId: string; error: string }> = this.onTaskFailedEmitter.event;
 
-    constructor() {
+    constructor(
+        @inject(ILogger) protected readonly logger: ILogger
+    ) {
         this.config = this.getDefaultConfig();
         this.startHeartbeatMonitoring();
         this.startTaskProcessing();

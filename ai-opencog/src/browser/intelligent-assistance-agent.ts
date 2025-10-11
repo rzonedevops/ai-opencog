@@ -36,9 +36,11 @@ export interface AssistanceContext {
         language: string;
         framework?: string;
         dependencies: string[];
+        phase?: string;
     };
     userIntent?: 'debugging' | 'refactoring' | 'feature-development' | 'learning' | 'optimization';
     problemDescription?: string;
+    userId?: string;
 }
 
 export interface AssistanceResponse {
@@ -215,7 +217,7 @@ export class IntelligentAssistanceAgent implements Agent {
 
     private async analyzeAssistanceContext(context: AssistanceContext): Promise<any> {
         // Perform cognitive analysis of the current context
-        const contextAnalysis = {
+        const contextAnalysis: any = {
             codeComplexity: 0.5,
             errorLikelihood: 0.3,
             refactoringNeed: 0.4,
@@ -542,6 +544,7 @@ export class IntelligentAssistanceAgent implements Agent {
 
     private async learnFromAssistanceInteraction(context: AssistanceContext, response: AssistanceResponse): Promise<void> {
         const learningData: LearningData = {
+            type: 'adaptive',
             input: JSON.stringify(context),
             expectedOutput: JSON.stringify(response),
             context: {

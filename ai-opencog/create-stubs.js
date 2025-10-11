@@ -13,6 +13,7 @@ const dirs = [
   'node_modules/@theia/workspace/lib/browser',
   'node_modules/@theia/workspace/lib/common',
   'node_modules/@theia/variable-resolver/lib',
+  'node_modules/@theia/variable-resolver/lib/browser',
   'node_modules/@theia/navigator/lib/browser',
   'node_modules/@theia/terminal/lib/browser/base',
   'node_modules/@theia/task/lib/browser',
@@ -147,6 +148,7 @@ export interface LanguageModelRequirement {
   identifier: string;
   [key: string]: any;
 }
+export { LanguageModelRequirement };
 `,
   'node_modules/@theia/ai-chat/lib/common/chat-agents.d.ts': `
 export interface ChatAgent {
@@ -204,12 +206,13 @@ export class DisposableCollection implements Disposable {
   'node_modules/@theia/core/lib/browser/widgets.d.ts': `
 export const codicon: any;
 export class BaseWidget {
-  constructor(options?: any);
+  constructor();
   id: string;
   title: any;
   node: HTMLElement;
   onActivateRequest(msg?: any): void;
   update(): void;
+  dispose(): void;
 }
 export class Widget {
   id: string;
@@ -316,6 +319,7 @@ export class WorkspaceService {
   workspace: any;
   roots: any[];
   readFile(uri: any): Promise<string>;
+  onWorkspaceChanged: any;
 }
 `,
   'node_modules/@theia/workspace/lib/browser/index.d.ts': `
@@ -327,6 +331,7 @@ export class WorkspaceService {
   workspace: any;
   roots: any[];
   readFile(uri: any): Promise<string>;
+  onWorkspaceChanged: any;
 }
 `,
   'node_modules/@theia/workspace/lib/common/index.d.ts': `
@@ -450,6 +455,7 @@ export class PreferenceService {
   get(key: string): any;
 }
 export class BaseWidget {
+  constructor();
   id: string;
   title: any;
   node: HTMLElement;
@@ -564,6 +570,11 @@ export interface Event<T> {
   (listener: (e: T) => any): any;
 }
 `,
+  'node_modules/@theia/variable-resolver/lib/browser/index.d.ts': `
+export class VariableResolverService {
+  resolve(value: string, context?: any): Promise<string>;
+}
+`,
   'node_modules/react/index.d.ts': `
 import * as React from 'react';
 export = React;
@@ -619,7 +630,10 @@ export class ReactWidget {
   title: any;
   node: HTMLElement;
   protected render(): React.ReactNode;
+  protected onActivateRequest(msg?: any): void;
+  protected onCloseRequest(msg?: any): void;
   update(): void;
+  dispose(): void;
 }
 `,
   'node_modules/@theia/core/lib/common/message-service.d.ts': `
